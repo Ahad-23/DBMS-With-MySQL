@@ -1,0 +1,876 @@
+******CREATING THE DATABASE******
+mysql> use ass3comp;
+Database changed
+mysql> create table emp(empno int(5) primary key,ename varchar(10),job varchar(10),mgr int(5),hiredate date,sal int(6),comm int(6));
+Query OK, 0 rows affected, 4 warnings (1.90 sec)
+
+mysql> create table dept(deptno int(3) primary key,dname varchar(15),loc varchar(10));
+Query OK, 0 rows affected, 1 warning (2.30 sec)
+
+mysql> alter table emp add dno int(3);
+Query OK, 0 rows affected, 1 warning (0.40 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+mysql> alter table emp add foreign key (dno) references dept(deptno);
+Query OK, 0 rows affected (2.74 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO dept(deptno,dname,loc)
+    -> VALUES
+    -> (10, 'ACCOUNTING', 'NEW YORK'),
+    -> (20, 'RESEARCH', 'DALLAS'),
+    -> (30, 'SALES', 'CHICAGO'),
+    -> (40, 'OPERATIONS', 'BOSTON');
+Query OK, 4 rows affected (0.08 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO emp (empno, ename, job, mgr, hiredate, sal, comm, dno) VALUES
+    -> (7369, 'SMITH', 'CLERK', 7902, STR_TO_DATE('17-DEC-80', '%d-%b-%y'), 800, NULL, 20),
+    -> (7499, 'ALLEN', 'SALESMAN', 7698, STR_TO_DATE('20-FEB-81', '%d-%b-%y'), 1600, 300, 30),
+    -> (7521, 'WARD', 'SALESMAN', 7698, STR_TO_DATE('22-FEB-81', '%d-%b-%y'), 1250, 500, 30),
+    -> (7566, 'JONES', 'MANAGER', 7839, STR_TO_DATE('02-APR-81', '%d-%b-%y'), 2975, NULL, 20),
+    -> (7654, 'MARTIN', 'SALESMAN', 7698, STR_TO_DATE('28-SEP-81', '%d-%b-%y'), 1250, 1400, 30),
+    -> (7698, 'BLAKE', 'MANAGER', 7839, STR_TO_DATE('01-MAY-81', '%d-%b-%y'), 2850, NULL, 10),
+    -> (7782, 'CLARK', 'MANAGER', 7839, STR_TO_DATE('09-JUN-81', '%d-%b-%y'), 2450, NULL, 10),
+    -> (7788, 'SCOTT', 'ANALYST', 7566, STR_TO_DATE('19-APR-87', '%d-%b-%y'), 3000, NULL, 20),
+    -> (7839, 'KING', 'PRESIDENT', NULL, STR_TO_DATE('17-NOV-81', '%d-%b-%y'), 5000, NULL, 10),
+    -> (7844, 'TURNER', 'SALESMAN', 7698, STR_TO_DATE('08-SEP-81', '%d-%b-%y'), 1500, 0, 30),
+    -> (7876, 'ADAMS', 'CLERK', 7788, STR_TO_DATE('23-MAY-87', '%d-%b-%y'), 1100, NULL, 20),
+    -> (7900, 'JAMES', 'CLERK', 7698, STR_TO_DATE('03-DEC-81', '%d-%b-%y'), 950, NULL, 30),
+    -> (7902, 'FORD', 'ANALYST', 7566, STR_TO_DATE('03-DEC-81', '%d-%b-%y'), 3000, NULL, 20),
+    -> (7934, 'MILLER', 'CLERK', 7782, STR_TO_DATE('23-JAN-82', '%d-%b-%y'), 1300, NULL, 10);
+Query OK, 14 rows affected (0.21 sec)
+Records: 14  Duplicates: 0  Warnings: 0
+
+mysql> alter table emp add foreign key (mgr) references emp(empno);
+Query OK, 14 rows affected (3.37 sec)
+Records: 14  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> desc emp;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| empno    | int         | NO   | PRI | NULL    |       |
+| ename    | varchar(10) | YES  |     | NULL    |       |
+| job      | varchar(10) | YES  |     | NULL    |       |
+| mgr      | int         | YES  | MUL | NULL    |       |
+| hiredate | date        | YES  |     | NULL    |       |
+| sal      | int         | YES  |     | NULL    |       |
+| comm     | int         | YES  |     | NULL    |       |
+| dno      | int         | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+8 rows in set (0.01 sec)
+
+mysql> desc dept;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| deptno | int         | NO   | PRI | NULL    |       |
+| dname  | varchar(15) | YES  |     | NULL    |       |
+| loc    | varchar(10) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> select * from emp;
++-------+--------+-----------+------+------------+------+------+------+
+| empno | ename  | job       | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+-----------+------+------------+------+------+------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |   20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |   30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |   20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |   10 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |   10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |   10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |   30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |   30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |   20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   10 |
++-------+--------+-----------+------+------------+------+------+------+
+14 rows in set (0.00 sec)
+
+mysql> select * from dept;
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     10 | ACCOUNTING | NEW YORK |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
+|     40 | OPERATIONS | BOSTON   |
++--------+------------+----------+
+
+4 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+************************PROBLEM STATEMENTS************************
+1)List the employee names and his annual salary dept wise.
+(Using cartesian product)
+mysql> select dno,ename,sal from emp,dept where dept.deptno=emp.dno;
++------+--------+------+
+| dno  | ename  | sal  |
++------+--------+------+
+|   10 | BLAKE  | 2850 |
+|   10 | CLARK  | 2450 |
+|   10 | KING   | 5000 |
+|   10 | MILLER | 1300 |
+|   20 | SMITH  |  800 |
+|   20 | JONES  | 2975 |
+|   20 | SCOTT  | 3000 |
+|   20 | ADAMS  | 1100 |
+|   20 | FORD   | 3000 |
+|   30 | ALLEN  | 1600 |
+|   30 | WARD   | 1250 |
+|   30 | MARTIN | 1250 |
+|   30 | TURNER | 1500 |
+|   30 | JAMES  |  950 |
++------+--------+------+
+14 rows in set (0.00 sec)
+
+
+(Using join)
+mysql> SELECT emp.dno, emp.ename,emp. sal,dept.dname
+    -> FROM emp
+    ->  JOIN dept ON dept.deptno = emp.dno;
++------+--------+------+------------+
+| dno  | ename  | sal  | dname      |
++------+--------+------+------------+
+|   10 | BLAKE  | 2850 | ACCOUNTING |
+|   10 | CLARK  | 2450 | ACCOUNTING |
+|   10 | KING   | 5000 | ACCOUNTING |
+|   10 | MILLER | 1300 | ACCOUNTING |
+|   20 | SMITH  |  800 | RESEARCH   |
+|   20 | JONES  | 2975 | RESEARCH   |
+|   20 | SCOTT  | 3000 | RESEARCH   |
+|   20 | ADAMS  | 1100 | RESEARCH   |
+|   20 | FORD   | 3000 | RESEARCH   |
+|   30 | ALLEN  | 1600 | SALES      |
+|   30 | WARD   | 1250 | SALES      |
+|   30 | MARTIN | 1250 | SALES      |
+|   30 | TURNER | 1500 | SALES      |
+|   30 | JAMES  |  950 | SALES      |
++------+--------+------+------------+
+14 rows in set (0.01 sec)
+
+
+
+
+2)Find out at least 5 earners of the company.
+Ans: Error faced in this question:
+
+When salary is only taken in consideration, commision is not and hence top earners are not identified
+mysql> select * from emp order by sal desc limit 5;
++-------+-------+-----------+------+------------+------+------+------+
+| empno | ename | job       | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+-----------+------+------------+------+------+------+
+|  7839 | KING  | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |   10 |
+|  7902 | FORD  | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |   20 |
+|  7788 | SCOTT | ANALYST   | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7566 | JONES | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |   20 |
+|  7698 | BLAKE | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |   10 |
++-------+-------+-----------+------+------------+------+------+------+
+5 rows in set (0.01 sec)
+
+When sal+comm is taken into consideration,multiple tuples have comm as null causing inconsistency in the data
+
+mysql> select * from emp order by (sal+comm) and sal desc limit 5;
++-------+--------+----------+------+------------+------+------+------+
+| empno | ename  | job      | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+----------+------+------------+------+------+------+
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500 |    0 |   30 |
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600 |  300 |   30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7876 | ADAMS  | CLERK    | 7788 | 1987-05-23 | 1100 | NULL |   20 |
++-------+--------+----------+------+------------+------+------+------+
+
+
+Hence we use a function called ifnull(column_name,value)
+if the column_name is null, we give a specific value(0 in this case) in order to overcome the inconsistency
+
+mysql> select * from emp
+    -> order by (sal+ifnull(comm,0)) desc limit 5;
++-------+-------+-----------+------+------------+------+------+------+
+| empno | ename | job       | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+-----------+------+------------+------+------+------+
+|  7839 | KING  | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |   10 |
+|  7902 | FORD  | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |   20 |
+|  7788 | SCOTT | ANALYST   | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7566 | JONES | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |   20 |
+|  7698 | BLAKE | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |   10 |
++-------+-------+-----------+------+------------+------+------+------+
+5 rows in set (0.00 sec)
+
+Thus understood,analyst and manager are high paying roles in the company.
+
+
+3)List the records from emp whose deptno is not in dept
+
+mysql> select* from emp
+    -> where dno not in(select deptno from dept);
+Empty set (0.08 sec)
+
+Thus, understood from the query that every employee works under an existing department 
+
+
+4)List those employees whose sal is odd value.
+mysql> select *
+    -> from emp
+    -> where sal%2!=0;
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 2975 | NULL |   20 |
++-------+-------+---------+------+------------+------+------+------+
+1 row in set (0.00 sec)
+
+
+
+5)List the employees whose sal contain 3 digits.
+mysql> select *
+    -> from emp
+    -> where sal>99 and sal<1000;
++-------+-------+-------+------+------------+------+------+------+
+| empno | ename | job   | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+-------+------+------------+------+------+------+
+|  7369 | SMITH | CLERK | 7902 | 1980-12-17 |  800 | NULL |   20 |
+|  7900 | JAMES | CLERK | 7698 | 1981-12-03 |  950 | NULL |   30 |
++-------+-------+-------+------+------------+------+------+------+
+2 rows in set (0.00 sec)
+
+Thus understood,clerks are paid least in the company
+
+
+
+
+6)List the employees who joined in the month of ‘DEC’
+
+Using date functions
+
+mysql> select * 
+    -> from emp
+    -> where monthname(hiredate)='December';
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7369 | SMITH | CLERK   | 7902 | 1980-12-17 |  800 | NULL |   20 |
+|  7900 | JAMES | CLERK   | 7698 | 1981-12-03 |  950 | NULL |   30 |
+|  7902 | FORD  | ANALYST | 7566 | 1981-12-03 | 3000 | NULL |   20 |
++-------+-------+---------+------+------------+------+------+------+
+3 rows in set (0.00 sec)
+
+
+7)List the employees whose names contains ‘A’
+
+mysql> select *
+    -> from emp
+    -> where ename like '%A%';
++-------+--------+----------+------+------------+------+------+------+
+| empno | ename  | job      | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+----------+------+------------+------+------+------+
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600 |  300 |   30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7698 | BLAKE  | MANAGER  | 7839 | 1981-05-01 | 2850 | NULL |   10 |
+|  7782 | CLARK  | MANAGER  | 7839 | 1981-06-09 | 2450 | NULL |   10 |
+|  7876 | ADAMS  | CLERK    | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950 | NULL |   30 |
++-------+--------+----------+------+------------+------+------+------+
+7 rows in set (0.00 sec)
+
+
+8)List the maximum, minimum and average salary in the company.
+mysql> select avg(sal) as Average_Salary,min(sal) as Minimum_Salary, max(sal) as Maximum_Salary 
+    -> from emp;
++----------------+----------------+----------------+
+| Average_Salary | Minimum_Salary | Maximum_Salary |
++----------------+----------------+----------------+
+|      2073.2143 |            800 |           5000 |
++----------------+----------------+----------------+
+1 row in set (0.01 sec)
+
+
+adding more tables for meaningful conclusions
+mysql> select dname,deptno,avg(sal) as Avg_Salary,min(sal) as min_Salary,max(sal) as max_Salary 
+     ->from emp 
+     ->join dept on dept.deptno=emp.dno group by dno;
++------------+--------+------------+------------+------------+
+| dname      | deptno | Avg_Salary | min_Salary | max_Salary |
++------------+--------+------------+------------+------------+
+| ACCOUNTING |     10 |  2900.0000 |       1300 |       5000 |
+| RESEARCH   |     20 |  2175.0000 |        800 |       3000 |
+| SALES      |     30 |  1310.0000 |        950 |       1600 |
++------------+--------+------------+------------+------------+
+3 rows in set (0.00 sec)
+
+
+9)Write a query to return the day of the week for any date(or HIRE_DATE) entered in format ‘DD-MM-YY’
+mysql> select empno,ename,hiredate,dayofweek(hiredate) as Day_of_week
+    -> from emp;
++-------+--------+------------+-------------+
+| empno | ename  | hiredate   | Day_of_week |
++-------+--------+------------+-------------+
+|  7369 | SMITH  | 1980-12-17 |           4 |
+|  7499 | ALLEN  | 1981-02-20 |           6 |
+|  7521 | WARD   | 1981-02-22 |           1 |
+|  7566 | JONES  | 1981-04-02 |           5 |
+|  7654 | MARTIN | 1981-09-28 |           2 |
+|  7698 | BLAKE  | 1981-05-01 |           6 |
+|  7782 | CLARK  | 1981-06-09 |           3 |
+|  7788 | SCOTT  | 1987-04-19 |           1 |
+|  7839 | KING   | 1981-11-17 |           3 |
+|  7844 | TURNER | 1981-09-08 |           3 |
+|  7876 | ADAMS  | 1987-05-23 |           7 |
+|  7900 | JAMES  | 1981-12-03 |           5 |
+|  7902 | FORD   | 1981-12-03 |           5 |
+|  7934 | MILLER | 1982-01-23 |           7 |
++-------+--------+------------+-------------+
+14 rows in set (0.00 sec)
+
+
+
+10)Count the no of characters in employee name without considering spaces for each name.
+
+mysql> select ename,length(replace(ename,' ','')) as Name_Length from emp;
++--------+-------------+
+| ename  | Name_Length |
++--------+-------------+
+| SMITH  |           5 |
+| ALLEN  |           5 |
+| WARD   |           4 |
+| JONES  |           5 |
+| MARTIN |           6 |
+| BLAKE  |           5 |
+| CLARK  |           5 |
+| SCOTT  |           5 |
+| KING   |           4 |
+| TURNER |           6 |
+| ADAMS  |           5 |
+| JAMES  |           5 |
+| FORD   |           4 |
+| MILLER |           6 |
++--------+-------------+
+14 rows in set (0.00 sec)
+
+11)List the employees who are drawing less than 1000. Sort the output by salary.
+mysql> select *
+    -> from emp
+    -> where sal<1000
+    -> order by sal desc;
++-------+-------+-------+------+------------+------+------+------+
+| empno | ename | job   | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+-------+------+------------+------+------+------+
+|  7900 | JAMES | CLERK | 7698 | 1981-12-03 |  950 | NULL |   30 |
+|  7369 | SMITH | CLERK | 7902 | 1980-12-17 |  800 | NULL |   20 |
++-------+-------+-------+------+------------+------+------+------+
+2 rows in set (0.00 sec)
+
+
+12)Write a query in SQL to display the unique designations for the employees. 
+mysql> select distinct job
+    -> from emp;
++-----------+
+| job       |
++-----------+
+| CLERK     |
+| SALESMAN  |
+| MANAGER   |
+| ANALYST   |
+| PRESIDENT |
++-----------+
+5 rows in set (0.00 sec)
+
+
+13)Delete Employees who joined in Year 1980
+
+mysql> select *
+    -> from emp;
++-------+--------+-----------+------+------------+------+------+------+
+| empno | ename  | job       | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+-----------+------+------------+------+------+------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |   20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |   30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 3570 | NULL |   20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 3420 | NULL |   10 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2940 | NULL |   10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |   10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 11981-09-08 | 1500 |    0 |   30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |   30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |   20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   10 |
++-------+--------+-----------+------+------------+------+------+------+
+14 rows in set (0.00 sec)
+
+mysql> delete from emp 
+    -> where year(hiredate)=1980;
+Query OK, 1 row affected (0.54 sec)
+
+mysql> select * from emp;
++-------+--------+-----------+------+------------+------+------+------+
+| empno | ename  | job       | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+-----------+------+------------+------+------+------+
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |   30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 3570 | NULL |   20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 3420 | NULL |   10 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2940 | NULL |   10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |   10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |   30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |   30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |   20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   10 |
++-------+--------+-----------+------+------------+------+------+------+
+13 rows in set (0.00 sec)
+
+
+
+
+
+14) Increase the salary of Managers by 20% of their current salary.
+
+mysql> select* from emp
+    -> where job='MANAGER';
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 2975 | NULL |   20 |
+|  7698 | BLAKE | MANAGER | 7839 | 1981-05-01 | 2850 | NULL |   10 |
+|  7782 | CLARK | MANAGER | 7839 | 1981-06-09 | 2450 | NULL |   10 |
++-------+-------+---------+------+------------+------+------+------+
+3 rows in set (0.00 sec)
+
+mysql> update emp
+    -> set sal=sal*1.2
+    -> where job='MANAGER';
+Query OK, 3 rows affected (0.20 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select* from emp where job='MANAGER';
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 3570 | NULL |   20 |
+|  7698 | BLAKE | MANAGER | 7839 | 1981-05-01 | 3420 | NULL |   10 |
+|  7782 | CLARK | MANAGER | 7839 | 1981-06-09 | 2940 | NULL |   10 |
++-------+-------+---------+------+------------+------+------+------+
+3 rows in set (0.00 sec)
+
+
+
+15) List employees not belonging to department 30, 40, or 10.
+
+mysql> select * from emp where dno!=30 and dno!=40 and dno!=10;
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 3570 | NULL |   20 |
+|  7788 | SCOTT | ANALYST | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7876 | ADAMS | CLERK   | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7902 | FORD  | ANALYST | 7566 | 1981-12-03 | 3000 | NULL |   20 |
++-------+-------+---------+------+------------+------+------+------+
+4 rows in set (0.00 sec)
+
+
+16) List the different designations in the company.
+mysql> select distinct(job) as Designation from emp;
++-------------+
+| Designation |
++-------------+
+| SALESMAN    |
+| MANAGER     |
+| ANALYST     |
+| PRESIDENT   |
+| CLERK       |
++-------------+
+5 rows in set (0.00 sec)
+
+
+17)List the names of employees who are not eligible for commission.
+
+mysql> select ename as Employee_Name
+    -> from emp
+    -> where comm is null;
++---------------+
+| Employee_Name |
++---------------+
+| JONES         |
+| BLAKE         |
+| CLARK         |
+| SCOTT         |
+| KING          |
+| ADAMS         |
+| JAMES         |
+| FORD          |
+| MILLER        |
++---------------+
+9 rows in set (0.01 sec)
+
+
+
+18)List employees whose names either start or end with “S”.
+mysql> SELECT *
+    -> FROM emp
+    -> WHERE ename LIKE 'S%' OR ename LIKE '%S';
++-------+-------+---------+------+------------+------+------+------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | dno  |
++-------+-------+---------+------+------------+------+------+------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 3570 | NULL |   20 |
+|  7788 | SCOTT | ANALYST | 7566 | 1987-04-19 | 3000 | NULL |   20 |
+|  7876 | ADAMS | CLERK   | 7788 | 1987-05-23 | 1100 | NULL |   20 |
+|  7900 | JAMES | CLERK   | 7698 | 1981-12-03 |  950 | NULL |   30 |
++-------+-------+---------+------+------------+------+------+------+
+4 rows in set (0.00 sec)
+
+
+19)List employees whose names have letter “A” as second letter” in their names.
+mysql> select *
+    -> from emp
+    -> where ename like '_A%';
++-------+--------+----------+------+------------+------+------+------+
+| empno | ename  | job      | mgr  | hiredate   | sal  | comm | dno  |
++-------+--------+----------+------+------------+------+------+------+
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |   30 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250 | 1400 |   30 |
+|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950 | NULL |   30 |
++-------+--------+----------+------+------------+------+------+------+
+3 rows in set (0.00 sec)
+
+
+20) List the number of employees working with the company.
+mysql> select count(*) as No_of_Employees
+    -> from emp;
++-----------------+
+| No_of_Employees |
++-----------------+
+|              13 |
++-----------------+
+1 row in set (0.04 sec)
+
+
+
+
+
+
+
+
+
+
+HOTEL DATABASE QUERIES
+CREATING THE HOTEL DATABASE (CREATED ALREADY IN ASSIGNMENT 2)
+mysql>create table Hotel(Hotelno int(10) primary key,Name varchar(30),City varchar(10));
+
+mysql>create table Room(RoomNo int(5) primary key,Hnum int(10),foreign key (Hnum) references Hotel(Hotelno),type varchar(10),price double(7,2));
+
+mysql>create table Guest(GuestNo int(10) primary key,GuestName varchar(30),GuestAddress varchar(30));
+
+mysql>create table booking (hotnum int,guestnum int,datefrom date,dateto date,room_num int,foreign key (hotelnum) references hotel(hotelno),foreign key (guestnum) references guest(guestno),foreign key (room_num) references room(roomno)
+);
+
+
+
+mysql> desc Hotel;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| Hotelno | int         | NO   | PRI | NULL    |       |
+| Name    | varchar(30) | YES  |     | NULL    |       |
+| City    | varchar(10) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+
+mysql> desc Room;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| RoomNo | int         | NO   | PRI | NULL    |       |
+| Hnum   | int         | YES  | MUL | NULL    |       |
+| type   | varchar(10) | YES  |     | NULL    |       |
+| price  | double(7,2) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+
+
+mysql> desc Booking;
++----------+------+------+-----+---------+-------+
+| Field    | Type | Null | Key | Default | Extra |
++----------+------+------+-----+---------+-------+
+| HotNum   | int  | YES  | MUL | NULL    |       |
+| GuestNum | int  | YES  | MUL | NULL    |       |
+| DateFrom | date | YES  |     | NULL    |       |
+| DateTo   | date | YES  |     | NULL    |       |
+| Room_num | int  | YES  | MUL | NULL    |       |
++----------+------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+
+
+mysql> desc Guest;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| GuestNo      | int         | NO   | PRI | NULL    |       |
+| GuestName    | varchar(30) | YES  |     | NULL    |       |
+| GuestAddress | varchar(30) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+
+
+INSERTING DATA
+
+mysql> insert into Hotel
+    -> values
+    -> (11, 'Holiday Inn', 'Mumbai'),
+    -> (12, 'Marriott', 'London'),
+    -> (13, 'Taj Hotel', 'Srinagar'),
+    -> (14, 'Grand Hyatt', 'Kolkata');
+Query OK, 4 rows affected (0.16 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+mysql> insert into Room
+    -> values
+    ->   (101, 11, 'D', 3500.00),
+    ->   (102, 11, 'F', 4500.00),
+    ->   (103, 11, 'S', 2500.00),
+    ->   (201, 12, 'D', 4000.00),
+    ->   (202, 12, 'F', 5000.00),
+    ->   (203, 12, 'S', 3000.00),
+    ->   (301, 13, 'D', 4500.00),
+    ->   (302, 13, 'F', 5500.00),
+    ->   (303, 13, 'S', 3500.00),
+    ->   (401, 14, 'D', 5000.00),
+    ->   (402, 14, 'F', 6000.00),
+    ->   (403,14, 'S', 4000.00);
+Query OK, 12 rows affected (0.09 sec)
+Records: 12  Duplicates: 0  Warnings: 0
+
+
+
+mysql> insert into Guest
+    -> values
+    ->     (1, 'Amit Patel', '123 Main St, Mumbai'),
+    ->     (2, 'Priya Sharma', '456 Elm St, New Delhi'),
+    ->     (3, 'Rajesh Kumar', '789 Oak St, Kolkata'),
+    ->     (4, 'Deepika Singh', '234 Elm St, Chennai'),
+    ->     (5, 'Vikram Verma', '567 Oak St, Hyderabad'),
+    ->     (6, 'Neha Gupta', '890 Maple St, Bangalore'),
+    ->     (7, 'Sandeep Singh', '1234 Pine St, Pune');
+Query OK, 7 rows affected (0.12 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+
+
+
+mysql> insert into Booking 
+    -> values
+    ->     (11, 1, '2022-12-01', '2022-12-03', 101),
+    ->     (11, 2, '2022-12-02', '2022-12-05', 102),
+    ->     (12, 3, '2023-01-05', '2023-01-08', 203),
+    ->     (12, 4, '2023-02-07', '2023-02-10', 201),
+    ->     (13, 5, '2021-11-10', '2021-11-13', 302),
+    ->     (13, 6, '2022-03-12', '2022-03-15', 301),
+    ->     (14, 7, '2022-09-15', '2022-09-18', 403);
+Query OK, 7 rows affected (0.10 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+
+mysql> select * from Hotel;
++---------+-------------+----------+
+| Hotelno | Name        | City     |
++---------+-------------+----------+
+|      11 | Holiday Inn | Mumbai   |
+|      12 | Marriott    | London   |
+|      13 | Taj Hotel   | Srinagar |
+|      14 | Grand Hyatt | Kolkata  |
++---------+-------------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select * from Room;
++--------+------+------+---------+
+| RoomNo | Hnum | type | price   |
++--------+------+------+---------+
+|    101 |   11 | D    | 3500.00 |
+|    102 |   11 | F    | 4500.00 |
+|    103 |   11 | S    | 2500.00 |
+|    201 |   12 | D    | 4000.00 |
+|    202 |   12 | F    | 5000.00 |
+|    203 |   12 | S    | 3000.00 |
+|    301 |   13 | D    | 4500.00 |
+|    302 |   13 | F    | 5500.00 |
+|    303 |   13 | S    | 3500.00 |
+|    401 |   14 | D    | 5000.00 |
+|    402 |   14 | F    | 6000.00 |
+|    403 |   14 | S    | 4000.00 |
++--------+------+------+---------+
+12 rows in set (0.03 sec)
+
+mysql> select * from Guest;
++---------+---------------+-------------------------+
+| GuestNo | GuestName     | GuestAddress            |
++---------+---------------+-------------------------+
+|       1 | Amit Patel    | 123 Main St, Mumbai     |
+|       2 | Priya Sharma  | 456 Elm St, New Delhi   |
+|       3 | Rajesh Kumar  | 789 Oak St, Kolkata     |
+|       4 | Deepika Singh | 234 Elm St, Chennai     |
+|       5 | Vikram Verma  | 567 Oak St, Hyderabad   |
+|       6 | Neha Gupta    | 890 Maple St, Bangalore |
+|       7 | Sandeep Singh | 1234 Pine St, Pune      |
++---------+---------------+-------------------------+
+7 rows in set (0.00 sec)
+
+mysql> select * from Booking;
++--------+----------+------------+------------+----------+
+| HotNum | GuestNum | DateFrom   | DateTo     | Room_num |
++--------+----------+------------+------------+----------+
+|     11 |        1 | 2022-12-01 | 2022-12-03 |      101 |
+|     11 |        2 | 2022-12-02 | 2022-12-05 |      102 |
+|     12 |        3 | 2023-01-05 | 2023-01-08 |      203 |
+|     12 |        4 | 2023-02-07 | 2023-02-10 |      201 |
+|     13 |        5 | 2021-11-10 | 2021-11-13 |      302 |
+|     13 |        6 | 2022-03-12 | 2022-03-15 |      301 |
+|     14 |        7 | 2022-09-15 | 2022-09-18 |      403 |
++--------+----------+------------+------------+----------+
+7 rows in set (0.00 sec)
+
+
+
+QUESTIONS:
+1.List the price and type of all rooms at the ‘Holiday Inn’ hotel.
+
+mysql> select Room.type, Room.price
+    -> from Room
+    -> inner join Hotel on Room.Hnum = Hotel.Hotelno
+    -> where Hotel.Name = 'Holiday Inn';
++------+---------+
+| type | price   |
++------+---------+
+| D    | 3500.00 |
+| F    | 4500.00 |
+| S    | 2500.00 |
++------+---------+
+3 rows in set (0.26 sec)
+
+
+2.List the number of hotels with more than 100 rooms and located in ‘Mumbai’.
+mysql> select count(*) AS NumberOfHotels
+    -> from Hotel
+    -> where City = 'Mumbai' 
+    -> AND Hotelno IN (SELECT Hnum from Room group by Hnum having count(*) > 100);
++----------------+
+| NumberOfHotels |
++----------------+
+|              0 |
++----------------+
+1 row in set (0.70 sec)
+
+
+
+4.Increase the price and type of all rooms at the ‘Holiday Inn’ hotel.
+
+mysql> select Room.price,Hotel.Name
+    -> from Room
+    -> inner join Hotel on Room.hnum=Hotel.Hotelno
+    -> where Hotel.Name='Holiday Inn';
++---------+-------------+
+| price   | Name        |
++---------+-------------+
+| 3500.00 | Holiday Inn |
+| 4500.00 | Holiday Inn |
+| 2500.00 | Holiday Inn |
++---------+-------------+
+3 rows in set (0.00 sec)
+
+
+mysql> update Room
+    -> set price = price * 1.1
+    -> where Hnum = (select Hotelno from Hotel where Name = 'Holiday Inn');
+Query OK, 3 rows affected (0.18 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+
+
+mysql> select Room.price,Hotel.Name
+    -> from Room
+    -> inner join Hotel on Room.hnum=Hotel.Hotelno
+    -> where Hotel.Name='Holiday Inn';
++---------+-------------+
+| price   | Name        |
++---------+-------------+
+| 3850.00 | Holiday Inn |
+| 4950.00 | Holiday Inn |
+| 2750.00 | Holiday Inn |
++---------+-------------+
+3 rows in set (0.00 sec)
+
+5.List all double(‘D’) and family rooms(‘F’) with a price greater than 3500 per night.
+
+mysql> select * from Room
+    -> where type='D' or type='F' and price>3500;
++--------+------+------+---------+
+| RoomNo | Hnum | type | price   |
++--------+------+------+---------+
+|    101 |   11 | D    | 3850.00 |
+|    102 |   11 | F    | 4950.00 |
+|    201 |   12 | D    | 4000.00 |
+|    202 |   12 | F    | 5000.00 |
+|    301 |   13 | D    | 4500.00 |
+|    302 |   13 | F    | 5500.00 |
+|    401 |   14 | D    | 5000.00 |
+|    402 |   14 | F    | 6000.00 |
++--------+------+------+---------+
+8 rows in set (0.00 sec)
+
+6.Delete Taj Hotel entry located in Srinagar
+
+mysql> delete from Hotel 
+    -> where Name='Taj Hotel' and City='Srinagar';
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`AhadHotel`.`Booking`, CONSTRAINT `Booking_ibfk_1` FOREIGN KEY (`HotNum`) REFERENCES `Hotel` (`Hotelno`))
+
+
+ERROR OCCURS AS HotelNo IS NECESSARY FOR REFERENCE IN BOOKING FOR FOREIGN KEY
+ISSUE IS RESOLVED BY DELETING BOOKING AND ROOM TUPLES OF ROOMS IN THE HOTEL
+
+mysql> delete from Booking
+    -> where hotnum = (select Hotelno from Hotel where Name = 'Taj Hotel' and City = 'Srinagar');
+Query OK, 2 rows affected (0.09 sec)
+
+mysql> delete from Room
+    -> where Hnum = (select Hotelno from Hotel where Name = 'Taj Hotel' and City = 'Srinagar');
+Query OK, 3 rows affected (0.57 sec)
+
+mysql> delete from Hotel  where Name='Taj Hotel' and City='Srinagar';
+Query OK, 1 row affected (0.87 sec)
+
+mysql> select * from Hotel;
++---------+-------------+---------+
+| Hotelno | Name        | City    |
++---------+-------------+---------+
+|      11 | Holiday Inn | Mumbai  |
+|      12 | Marriott    | London  |
+|      14 | Grand Hyatt | Kolkata |
++---------+-------------+---------+
+3 rows in set (0.00 sec)
+
+
