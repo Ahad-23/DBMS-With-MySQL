@@ -1,0 +1,248 @@
+ create procedure mycursor1()
+     begin
+     declare done int default 0;
+     declare vssn int;
+     declare vfname varchar(20);
+     declare vlname varchar(20);
+     declare c1 cursor for select ssn,fname,lname from emp where dno=10;
+     declare continue handler for not found set done=1;
+     open c1;
+     repeat
+     fetch c1 into vssn,vfname,vlname;
+     select vssn,vfname,vlname;
+     until done
+     end repeat;
+     close c1;
+     end$$
+Query OK, 0 rows affected (0.01 sec)
+
+
+
+mysql> call mycursor;
+    -> $$
++------+--------+--------+
+| vssn | vfname | vlname |
++------+--------+--------+
+| 1001 | Ahad   | Shaikh |
++------+--------+--------+
+1 row in set (0.00 sec)
+
++------+--------+--------+
+| vssn | vfname | vlname |
++------+--------+--------+
+| 1002 | Vansh  | Patel  |
++------+--------+--------+
+1 row in set (0.00 sec)
+
++------+--------+---------+
+| vssn | vfname | vlname  |
++------+--------+---------+
+| 1004 | Rachit | Patekar |
++------+--------+---------+
+1 row in set (0.00 sec)
+
++------+--------+---------+
+| vssn | vfname | vlname  |
++------+--------+---------+
+| 1004 | Rachit | Patekar |
++------+--------+---------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+
+All inputs in one table
+mysql> create procedure mycursor3()
+    ->      begin
+    ->      declare done int default 0;
+    ->      declare vssn int;
+    ->      declare vfname varchar(20);
+    ->      declare vlname varchar(20);
+    ->      declare c1 cursor for select ssn, fname, lname from emp where dno=10;
+    ->
+    ->      declare continue handler for not found set done=1;
+    ->      open c1;
+    ->      repeat
+    ->      fetch c1 into vssn, vfname, vlname;
+    ->      insert into temp values(vssn, vfname, vlname);
+    ->      until done
+    ->      end repeat;
+    ->      close c1;
+    ->      end$$
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+mysql> call mycursor3;
+    -> $$
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from temp$$
++------+--------+---------+
+| SSN  | Fname  | Lname   |
++------+--------+---------+
+| 1001 | Ahad   | Shaikh  |
+| 1002 | Vansh  | Patel   |
+| 1004 | Rachit | Patekar |
+| 1004 | Rachit | Patekar |
++------+--------+---------+
+4 rows in set (0.00 sec)
+
+
+
+
+
+
+UPDATE SALARY FUNCTION
+
+mysql>  create procedure updateSalary()
+    ->      begin
+    ->      declare done int default 0;
+    ->      declare current_dnum int;
+    ->
+    ->      declare dnumcur cursor for select Dnumber from department;
+    ->      declare continue handler for not found set done=1;
+    ->      open dnumcur;
+    ->      repeat
+    ->      fetch dnumcur into current_dnum;
+    ->      update deptsal
+    ->      set totalsalary=(select sum(salary) from emp where dno=current_dnum)
+    ->      where dnumber=current_dnum;
+    ->      until done
+    ->      end repeat;
+    ->      close dnumcur;
+    ->      end$$
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+
+
+mysql> select* from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |           0 |
+|      11 |           0 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> call updateSalary;
+    -> $$
+Query OK, 0 rows affected (0.01 sec)
+
+
+mysql> select* from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      183391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+
+
+
+
+TRIGGERS
+mysql> create trigger update_salary1
+    -> after insert on emp
+    -> for each row
+    -> begin
+    -> if new.dno is not null then
+    -> update deptsal
+    -> set totalSalary=totalSalary+new.salary
+    -> where dnumber=new.dno;
+    -> end if;
+    -> end $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from emp;
+    -> $$
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Fname  | Minit   | Lname   | SSN  | Bdate      | Address       | Sex    | Salary   | SuperSSN | Dno  |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Ahad   | Qaisar  | Shaikh  | 1001 | 2003-12-23 | Nadiad,Gujrat | Male   | 78000.67 |     NULL |   10 |
+| Vansh  | Chetan  | Patel   | 1002 | 2004-06-12 | Navi Mumbai   | Male   | 52000.99 |     1001 |   10 |
+| Neev   | Mangesh | Jain    | 1003 | 2002-03-27 | Pune          | Male   | 91045.21 |     NULL |   11 |
+| Rachit | Rupesh  | Patekar | 1004 | 2004-07-29 | Mumbai        | Male   | 16045.21 |     1001 |   10 |
+| Bhakti | Suresh  | Ratnani | 1005 | 2004-12-14 | Anand         | Female | 92345.69 |     1003 |   11 |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+5 rows in set (0.00 sec)
+
+mysql> select * from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      183391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> insert into emp values('Jai','Jay','Chavan',1006,'2001-12-14','Mumbai','Male','90000.00',1001,11)$$
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from emp;
+    -> $$
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Fname  | Minit   | Lname   | SSN  | Bdate      | Address       | Sex    | Salary   | SuperSSN | Dno  |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Ahad   | Qaisar  | Shaikh  | 1001 | 2003-12-23 | Nadiad,Gujrat | Male   | 78000.67 |     NULL |   10 |
+| Vansh  | Chetan  | Patel   | 1002 | 2004-06-12 | Navi Mumbai   | Male   | 52000.99 |     1001 |   10 |
+| Neev   | Mangesh | Jain    | 1003 | 2002-03-27 | Pune          | Male   | 91045.21 |     NULL |   11 |
+| Rachit | Rupesh  | Patekar | 1004 | 2004-07-29 | Mumbai        | Male   | 16045.21 |     1001 |   10 |
+| Bhakti | Suresh  | Ratnani | 1005 | 2004-12-14 | Anand         | Female | 92345.69 |     1003 |   11 |
+| Jai    | Jay     | Chavan  | 1006 | 2001-12-14 | Mumbai        | Male   | 90000.00 |     1001 |   11 |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+6 rows in set (0.00 sec)
+
+mysql> select * from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      363391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+
+IF DNO IS NULL
+
+mysql> select * from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      363391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+mysql>  insert into emp values('Mahi','Vijit','Shah',1007,'2005-08-14','Mumbai','Female','90000.00',1001,null)$$
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select* from emp$$
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Fname  | Minit   | Lname   | SSN  | Bdate      | Address       | Sex    | Salary   | SuperSSN | Dno  |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Ahad   | Qaisar  | Shaikh  | 1001 | 2003-12-23 | Nadiad,Gujrat | Male   | 78000.67 |     NULL |   10 |
+| Vansh  | Chetan  | Patel   | 1002 | 2004-06-12 | Navi Mumbai   | Male   | 52000.99 |     1001 |   10 |
+| Neev   | Mangesh | Jain    | 1003 | 2002-03-27 | Pune          | Male   | 91045.21 |     NULL |   11 |
+| Rachit | Rupesh  | Patekar | 1004 | 2004-07-29 | Mumbai        | Male   | 16045.21 |     1001 |   10 |
+| Bhakti | Suresh  | Ratnani | 1005 | 2004-12-14 | Anand         | Female | 92345.69 |     1003 |   11 |
+| Jai    | Jay     | Chavan  | 1006 | 2001-12-14 | Mumbai        | Male   | 90000.00 |     1001 |   11 |
+| Mahi   | Vijit   | Shah    | 1007 | 2005-08-14 | Mumbai        | Female | 90000.00 |     1001 | NULL |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+7 rows in set (0.00 sec)
+
+mysql> select * from deptsal$$
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      363391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
