@@ -1,0 +1,645 @@
+Hotel Database
+mysql>create database AhadHotel;
+Query OK, 1 row affected (0.56 sec)
+
+mysql>create table Hotel(Hotelno int(10) primary key,Name varchar(30),City varchar(10));
+
+mysql> desc Booking;
++----------+------+------+-----+---------+-------+
+| Field    | Type | Null | Key | Default | Extra |
++----------+------+------+-----+---------+-------+
+| HotNum   | int  | YES  | MUL | NULL    |       |
+| GuestNum | int  | YES  | MUL | NULL    |       |
+| DateFrom | date | YES  |     | NULL    |       |
+| DateTo   | date | YES  |     | NULL    |       |
+| Room_num | int  | YES  | MUL | NULL    |       |
++----------+------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql>create table Hotel(Hotelno int(10) primary key,Name varchar(30),City varchar(10));
+
+mysql> desc Hotel;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| Hotelno | int         | NO   | PRI | NULL    |       |
+| Name    | varchar(30) | YES  |     | NULL    |       |
+| City    | varchar(10) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+mysql>create table Guest(GuestNo int(10) primary key,GuestName varchar(10),GuestAddress varchar(30));
+
+
+mysql> desc Guest;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| GuestNo      | int         | NO   | PRI | NULL    |       |
+| GuestName    | varchar(10) | YES  |     | NULL    |       |
+| GuestAddress | varchar(30) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql>create table Room(RoomNo int(5) primary key,Hnum int(10),foreign key (Hnum) references Hotel(Hotelno),type varchar(10),price double(5,2));
+
+mysql> desc Room;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| RoomNo | int         | NO   | PRI | NULL    |       |
+| Hnum   | int         | YES  | MUL | NULL    |       |
+| type   | varchar(10) | YES  |     | NULL    |       |
+| price  | double(5,2) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+
+DDL STATEMENTS
+
+mysql> create database Company;
+Query OK, 1 row affected (0.28 sec)
+
+**************CONSTRAINTS**************
+1)Primary Key
+mysql> create table emp(SSN int(10) primary key);
+Query OK, 0 rows affected, 1 warning (1.30 sec)
+
+2)NOT NULL
+mysql> alter table emp add Fname varchar(10) not null;
+Query OK, 0 rows affected (3.60 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+3)CHECK
+mysql> alter table emp add Age int(3) check(Age>=18);
+Query OK, 0 rows affected, 1 warning (2.18 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+
+4)UNIQUE
+mysql> alter table emp add mobile_num bigint(11) unique ;
+Query OK, 0 rows affected, 1 warning (5.63 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+
+5)DEFAULT
+mysql>  alter table emp add Salary  double(7,2) default 25000.00;
+Query OK, 0 rows affected, 1 warning (0.44 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+6)FOREIGN KEY
+Adding a foreign key
+mysql> alter table dept add foreign key dept(mSSN) references empp(SSN);
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+mysql> desc dept;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| Dname | varchar(10) | YES  |     | NULL    |       |
+| Dnum  | int         | YES  |     | NULL    |       |
+| mSSN  | int         | YES  | MUL | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+VERIFYING CONSTRAINTS USING VARIOUS TEST CASES
+
+mysql> desc emp;
++------------+-------------+------+-----+----------+-------+
+| Field      | Type        | Null | Key | Default  | Extra |
++------------+-------------+------+-----+----------+-------+
+| SSN        | int         | NO   | PRI | NULL     |       |
+| Fname      | varchar(10) | NO   |     | NULL     |       |
+| Age        | int         | YES  |     | NULL     |       |
+| mobile_num | bigint      | YES  | UNI | NULL     |       |
+| Salary     | double(7,2) | YES  |     | 25000.00 |       |
++------------+-------------+------+-----+----------+-------+
+5 rows in set (0.01 sec)
+
+1)PRIMARY KEY
+mysql> insert into emp values(1001,"Ahad",19,9033356797,56000.70);
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into emp values(1001,"Jay",19,3848772398,56508.70);
+ERROR 1062 (23000): Duplicate entry '1001' for key 'emp.PRIMARY'
+
+
+2)NOT NULL
+mysql> insert into emp values(1001,null ,19,3848772398,56508.70);
+ERROR 1048 (23000): Column 'Fname' cannot be null
+
+
+3)CHECK
+mysql> insert into emp values(1001,"Jay",16,3848772398,56508.70);
+ERROR 3819 (HY000): Check constraint 'emp_chk_1' is violated.
+
+
+4)UNIQUE
+mysql> insert into emp values(1002,"Jay",20,9033356797,56508.70);
+ERROR 1062 (23000): Duplicate entry '9033356797' for key 'emp.mobile_num'
+
+
+5)DEFAULT
+mysql> alter table emp modify designation varchar(20) default "Employee";
+Query OK, 0 rows affected (1.22 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+
+**************ALTER COMMANDS**************
+mysql> desc emp;
++------------+-------------+------+-----+----------+-------+
+| Field      | Type        | Null | Key | Default  | Extra |
++------------+-------------+------+-----+----------+-------+
+| SSN        | int         | NO   | PRI | NULL     |       |
+| Fname      | varchar(10) | NO   |     | NULL     |       |
+| Age        | int         | YES  |     | NULL     |       |
+| mobile_num | bigint      | YES  | UNI | NULL     |       |
+| Salary     | double(7,2) | YES  |     | 25000.00 |       |
+| Sex        | varchar(6)  | YES  |     | NULL     |       |
+| Lname      | varchar(10) | YES  |     | NULL     |       |
++------------+-------------+------+-----+----------+-------+
+
+
+1)ADDING A COLUMN
+mysql> insert into emp values(1005,"Vansh",20,7865234567,46000.00,"Ahad","Patel","Analyst");
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> alter table emp add designation varchar(20);
+Query OK, 0 rows affected (4.54 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| Lname       | varchar(10) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | NULL     |       |
++-------------+-------------+------+-----+----------+-------+
+8 rows in set (0.01 sec)
+
+mysql> insert into emp values(1005,"Vansh",20,7865234567,46000.00,"Male","Patel","Analyst");
+Query OK, 1 row affected (1.02 sec)
+
+2) ADDING A COLUMN AT A PREFFERED LOCATION
+mysql> alter table emp add Lname1 varchar(10) after Fname;
+Query OK, 0 rows affected (1.43 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Lname1      | varchar(10) | YES  |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| Lname       | varchar(10) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | NULL     |       |
++-------------+-------------+------+-----+----------+-------+
+9 rows in set (0.01 sec)
+
+
+mysql> insert into emp values(1006,"Vansh","Patel",20,7865231567,46000.00,"Male","Patel","Analyst");
+Query OK, 1 row affected (0.32 sec)
+
+
+3)DELETING A COLUMN
+
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Lname1      | varchar(10) | YES  |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| Lname       | varchar(10) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | NULL     |       |
++-------------+-------------+------+-----+----------+-------+
+
+mysql> insert into emp values(1006,"Vansh","Patel",20,7865231567,46000.00,"Male","Patel","Analyst");
+Query OK, 1 row affected (0.32 sec)
+
+mysql> alter table emp drop column Lname;
+Query OK, 0 rows affected (1.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Lname1      | varchar(10) | YES  |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | NULL     |       |
++-------------+-------------+------+-----+----------+-------+
+8 rows in set (0.01 sec)
+
+mysql> insert into emp values(1006,"Vansh","Patel",20,7865231567,46000.00,"Male","Patel","Analyst");
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+
+4) ADDING A NOT NULL CONSTRAINT
+mysql> desc Project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| Pnumber   | int         | NO   | PRI | NULL    |       |
+| Plocation | varchar(10) | YES  |     | NULL    |       |
+| Dnum      | int         | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> alter table Project modify Plocation varchar(10) not null;
+Query OK, 0 rows affected (5.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| Pnumber   | int         | NO   | PRI | NULL    |       |
+| Plocation | varchar(10) | NO   |     | NULL    |       |
+| Dnum      | int         | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+5)ADDING A UNIQUE CONSTRAINT
+mysql> desc Project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| Pnumber   | int         | NO   | PRI | NULL    |       |
+| Plocation | varchar(10) | NO   |     | NULL    |       |
+| Dnum      | int         | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> alter table Project add constraint unique_Pname unique (Pname);
+Query OK, 0 rows affected (0.43 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pname     | varchar(10) | YES  | UNI | NULL    |       |
+| Pnumber   | int         | NO   | PRI | NULL    |       |
+| Plocation | varchar(10) | NO   |     | NULL    |       |
+| Dnum      | int         | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+6)PRIMARY KEY CONSTRAINT
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  |     | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | NULL    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> alter table Dependent add constraint primary key(D_id);
+Query OK, 0 rows affected (1.58 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  |     | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | NULL    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | NO   | PRI | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+
+
+
+7)FOREIGN KEY CONSTRAINT
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  |     | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | NULL    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | NO   | PRI | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+mysql> alter table Dependent add constraint foreign key (ESSN) references emp(SSN);
+Query OK, 0 rows affected (3.39 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  | MUL | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | NULL    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | NO   | PRI | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+
+
+
+8)DEFAULT CONSTRAINT
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  | MUL | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | NULL    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | NO   | PRI | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+mysql> alter table Dependent alter column Sex set default "Male";
+Query OK, 0 rows affected (0.15 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Dependent;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| ESSN           | int         | YES  | MUL | NULL    |       |
+| Dependent_name | varchar(20) | YES  |     | NULL    |       |
+| Sex            | varchar(10) | YES  |     | Male    |       |
+| Bdate          | date        | YES  |     | NULL    |       |
+| Relationship   | varchar(10) | YES  |     | NULL    |       |
+| D_id           | int         | NO   | PRI | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+
+9)UNIQUE CONSTRAINT
+mysql> desc emp;
++---------+-------------+------+-----+----------+-------+
+| Field   | Type        | Null | Key | Default  | Extra |
++---------+-------------+------+-----+----------+-------+
+| SSN     | int         | NO   | PRI | NULL     |       |
+| Fname   | varchar(10) | NO   |     | NULL     |       |
+| Lname   | varchar(10) | YES  |     | NULL     |       |
+| Age     | int         | YES  |     | NULL     |       |
+| Address | varchar(10) | YES  |     | NULL     |       |
+| Salary  | double(7,2) | YES  |     | 25000.00 |       |
+| pan_id  | int         | YES  |     | NULL     |       |
++---------+-------------+------+-----+----------+-------+
+7 rows in set (0.01 sec)
+
+mysql> alter table emp  add unique (Address);
+Query OK, 0 rows affected (0.37 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++---------+-------------+------+-----+----------+-------+
+| Field   | Type        | Null | Key | Default  | Extra |
++---------+-------------+------+-----+----------+-------+
+| SSN     | int         | NO   | PRI | NULL     |       |
+| Fname   | varchar(10) | NO   |     | NULL     |       |
+| Lname   | varchar(10) | YES  |     | NULL     |       |
+| Age     | int         | YES  |     | NULL     |       |
+| Address | varchar(10) | YES  | UNI | NULL     |       |
+| Salary  | double(7,2) | YES  |     | 25000.00 |       |
+| pan_id  | int         | YES  |     | NULL     |       |
++---------+-------------+------+-----+----------+-------+
+7 rows in set (0.01 sec)
+
+
+
+10)DROP A CONSTRAINT
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Lname1      | varchar(10) | YES  |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | Employee |       |
++-------------+-------------+------+-----+----------+-------+
+8 rows in set (0.01 sec)
+
+mysql> alter table emp modify designation varchar(20);
+Query OK, 0 rows affected (0.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++-------------+-------------+------+-----+----------+-------+
+| Field       | Type        | Null | Key | Default  | Extra |
++-------------+-------------+------+-----+----------+-------+
+| SSN         | int         | NO   | PRI | NULL     |       |
+| Fname       | varchar(10) | NO   |     | NULL     |       |
+| Lname1      | varchar(10) | YES  |     | NULL     |       |
+| Age         | int         | YES  |     | NULL     |       |
+| mobile_num  | bigint      | YES  | UNI | NULL     |       |
+| Salary      | double(7,2) | YES  |     | 25000.00 |       |
+| Sex         | varchar(15) | YES  |     | NULL     |       |
+| designation | varchar(20) | YES  |     | NULL     |       |
++-------------+-------------+------+-----+----------+-------+
+8 rows in set (0.01 sec)
+
+
+11) CHANGING COLUMN WIDTH
+mysql> insert into emp values(1004,"Someone",20,5678234579,78000.00,"Transgender","Someone");
+ERROR 1406 (22001): Data too long for column 'Sex' at row 1
+
+mysql> alter table emp modify Sex varchar(15);
+Query OK, 0 rows affected (0.59 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+mysql> desc emp;
++------------+-------------+------+-----+----------+-------+
+| Field      | Type        | Null | Key | Default  | Extra |
++------------+-------------+------+-----+----------+-------+
+| SSN        | int         | NO   | PRI | NULL     |       |
+| Fname      | varchar(10) | NO   |     | NULL     |       |
+| Age        | int         | YES  |     | NULL     |       |
+| mobile_num | bigint      | YES  | UNI | NULL     |       |
+| Salary     | double(7,2) | YES  |     | 25000.00 |       |
+| Sex        | varchar(15) | YES  |     | NULL     |       |
+| Lname      | varchar(10) | YES  |     | NULL     |       |
++------------+-------------+------+-----+----------+-------+
+7 rows in set (0.01 sec)
+
+mysql> insert into emp values(1004,"Someone",20,5678234579,78000.00,"Transgender","Someone");
+Query OK, 1 row affected (0.08 sec)
+
+
+
+12)RENAMING A COLUMN
+mysql> desc project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pnum      | int         | NO   | PRI | NULL    |       |
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| PLocation | varchar(30) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+
+mysql> alter table project change column PLocation PLoc varchar(30);
+Query OK, 0 rows affected (0.57 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc project;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| Pnum  | int         | NO   | PRI | NULL    |       |
+| Pname | varchar(10) | YES  |     | NULL    |       |
+| PLoc  | varchar(30) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+
+13)RENAMING A TABLE
+
+mysql> create table proj(Pnum int(5) primary key,Pname varchar(10),PLocation varchar(30));
+Query OK, 0 rows affected, 1 warning (1.17 sec)
+
+mysql> desc proj;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pnum      | int         | NO   | PRI | NULL    |       |
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| PLocation | varchar(30) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> alter table proj rename project;
+Query OK, 0 rows affected (5.66 sec)
+
+mysql> desc proj;
+ERROR 1146 (42S02): Table 'Company.proj' doesn't exist
+mysql> desc project;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Pnum      | int         | NO   | PRI | NULL    |       |
+| Pname     | varchar(10) | YES  |     | NULL    |       |
+| PLocation | varchar(30) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+
+14)DROP A TABLE:
+mysql> create table pseudo_table(some int(3) primary key,js varchar(2), fb double(3,2));
+Query OK, 0 rows affected, 2 warnings (0.85 sec)
+
+mysql> show tables;
++-----------------+
+| Tables_in_Acomp |
++-----------------+
+| Dependent       |
+| Project         |
+| dept            |
+| emp             |
+| pseudo_table    |
++-----------------+
+5 rows in set (0.00 sec)
+
+mysql> drop table pseudo_table;
+Query OK, 0 rows affected (2.13 sec)
+
+mysql> show tables;
++-----------------+
+| Tables_in_Acomp |
++-----------------+
+| Dependent       |
+| Project         |
+| dept            |
+| emp             |
++-----------------+
+4 rows in set (0.00 sec)
+
+
+
+
+DCL STATEMENTS
+Understanding grant and revoke by creating a user which  acts like a receptionist by only permitting him to add data and not permitting him to alter the schemas and constraints
+
+mysql> CREATE USER 'ahad'@'localhost' IDENTIFIED BY 'testwa';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE USER 'vansh'@'localhost' IDENTIFIED BY 'testwa2';
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> CREATE USER 'jay'@'localhost' IDENTIFIED BY 'testwa3';
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> grant all on acomp to 'ahad'@'localhost';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> revoke delete on acomp from 'ahad'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> revoke drop on acomp from 'ahad'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> revoke grant option on acomp from 'ahad'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> revoke create on acomp from 'ahad'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show grants for 'ahad'@'localhost';
++----------------------------------------------------------------------------------------------------------------------------------+
+| Grants for ahad@localhost
+                                        |
++----------------------------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `ahad`@`localhost`
+                                        |
+| GRANT SELECT, INSERT, UPDATE, REFERENCES, INDEX, ALTER, CREATE VIEW, SHOW VIEW, TRIGGER ON `acomp`.`acomp` TO `ahad`@`localhost` |
++----------------------------------------------------------------------------------------------------------------------------------+
+2 rows
+
+
+
+
