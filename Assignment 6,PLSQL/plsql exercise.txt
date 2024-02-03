@@ -1,0 +1,175 @@
+mysql> create database matchdb;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> create table matches(matchid int(3) primary key,matchdate date,stadium varchar(20),own_score int(3),opp_score int(3));
+Query OK, 0 rows affected, 3 warnings (0.04 sec)
+
+
+mysql> create table player(playerid int(4) primary key,name varchar(25),age int(3),season_score int(3));
+Query OK, 0 rows affected, 3 warnings (0.02 sec)
+
+
+mysql> create table match_player(
+    ->     playerid int(4),
+    ->     matchid int(3),
+    ->     score int(3),
+    ->     foreign key (playerid) references player(playerid),
+    ->     foreign key (matchid) references matches(matchid)
+    -> );
+Query OK, 0 rows affected, 3 warnings (0.03 sec)
+
+
+mysql> desc match_player;
++----------+------+------+-----+---------+-------+
+| Field    | Type | Null | Key | Default | Extra |
++----------+------+------+-----+---------+-------+
+| playerid | int  | YES  | MUL | NULL    |       |
+| matchid  | int  | YES  | MUL | NULL    |       |
+| score    | int  | YES  |     | NULL    |       |
++----------+------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> desc matches;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| matchid   | int         | NO   | PRI | NULL    |       |
+| matchdate | date        | YES  |     | NULL    |       |
+| stadium   | varchar(20) | YES  |     | NULL    |       |
+| own_score | int         | YES  |     | NULL    |       |
+| opp_score | int         | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> desc players;
+ERROR 1146 (42S02): Table 'matchdb.players' doesn't exist
+mysql> desc player;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| playerid     | int         | NO   | PRI | NULL    |       |
+| name         | varchar(25) | YES  |     | NULL    |       |
+| age          | int         | YES  |     | NULL    |       |
+| season_score | int         | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+
+
+mysql> INSERT INTO matches (matchid, matchdate, stadium, own_score, opp_score)
+    -> VALUES (1, '2023-10-20', 'Stadium A', 3, 1),
+    ->        (2, '2023-10-25', 'Stadium B', 2, 2),
+    ->        (3, '2023-11-02', 'Stadium C', 1, 0);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO player (playerid, name, age, season_score)
+    -> VALUES (1, 'John Doe', 25, 10),
+    ->        (2, 'Jane Smith', 23, 8),
+    ->        (3, 'Michael Johnson', 27, 12);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO match_player (playerid, matchid, score)
+    -> VALUES (1, 1, 1),
+    ->        (2, 1, 0),
+    ->        (3, 1, 2),
+    ->        (1, 2, 0),
+    ->        (2, 2, 1),
+    ->        (3, 2, 1),
+    ->        (1, 3, 1),
+    ->        (2, 3, 1),
+    ->        (3, 3, 0);
+Query OK, 9 rows affected (0.01 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
+
+mysql> select * from matches;
++---------+------------+-----------+-----------+-----------+
+| matchid | matchdate  | stadium   | own_score | opp_score |
++---------+------------+-----------+-----------+-----------+
+|       1 | 2023-10-20 | Stadium A |         3 |         1 |
+|       2 | 2023-10-25 | Stadium B |         2 |         2 |
+|       3 | 2023-11-02 | Stadium C |         1 |         0 |
++---------+------------+-----------+-----------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> select * from player;
++----------+-----------------+------+--------------+
+| playerid | name            | age  | season_score |
++----------+-----------------+------+--------------+
+|        1 | John Doe        |   25 |           10 |
+|        2 | Jane Smith      |   23 |            8 |
+|        3 | Michael Johnson |   27 |           12 |
++----------+-----------------+------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from match_player;
++----------+---------+-------+
+| playerid | matchid | score |
++----------+---------+-------+
+|        1 |       1 |     1 |
+|        2 |       1 |     0 |
+|        3 |       1 |     2 |
+|        1 |       2 |     0 |
+|        2 |       2 |     1 |
+|        3 |       2 |     1 |
+|        1 |       3 |     1 |
+|        2 |       3 |     1 |
+|        3 |       3 |     0 |
++----------+---------+-------+
+9 rows in set (0.00 sec)
+
+
+
+
+
+
+mysql> create procedure ass_proc(in pid INT)
+    -> begin
+    ->   declare opid INT;
+    ->
+    ->     select matchid
+    ->     into opid
+    ->     from match_player
+    ->    where playerid = pid
+    ->     order by score desc
+    ->     limit 1;
+    ->
+    ->     select *
+    ->     from matches
+    ->    where matchid = opid;
+    -> END $$
+Query OK, 0 rows affected (0.01 sec)
+
+
+mysql> call ass_proc(2)$$
++---------+------------+-----------+-----------+-----------+
+| matchid | matchdate  | stadium   | own_score | opp_score |
++---------+------------+-----------+-----------+-----------+
+|       2 | 2023-10-25 | Stadium B |         2 |         2 |
++---------+------------+-----------+-----------+-----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call ass_proc(3)$$
++---------+------------+-----------+-----------+-----------+
+| matchid | matchdate  | stadium   | own_score | opp_score |
++---------+------------+-----------+-----------+-----------+
+|       1 | 2023-10-20 | Stadium A |         3 |         1 |
++---------+------------+-----------+-----------+-----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call ass_proc(1)$$
++---------+------------+-----------+-----------+-----------+
+| matchid | matchdate  | stadium   | own_score | opp_score |
++---------+------------+-----------+-----------+-----------+
+|       1 | 2023-10-20 | Stadium A |         3 |         1 |
++---------+------------+-----------+-----------+-----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+

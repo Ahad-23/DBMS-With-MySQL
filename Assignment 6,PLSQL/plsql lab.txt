@@ -1,0 +1,195 @@
+mysql> delimiter //
+mysql>  create procedure getemployee()
+    ->  begin
+    ->  select * from emp;
+    ->   end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call getemployee //
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Fname  | Minit   | Lname   | SSN  | Bdate      | Address       | Sex    | Salary   | SuperSSN | Dno  |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+| Ahad   | Qaisar  | Shaikh  | 1001 | 2003-12-23 | Nadiad,Gujrat | Male   | 78000.67 |     NULL |   10 |
+| Vansh  | Chetan  | Patel   | 1002 | 2004-06-12 | Navi Mumbai   | Male   | 52000.99 |     1001 |   10 |
+| Neev   | Mangesh | Jain    | 1003 | 2002-03-27 | Pune          | Male   | 91045.21 |     NULL |   11 |
+| Rachit | Rupesh  | Patekar | 1004 | 2004-07-29 | Mumbai        | Male   | 16045.21 |     1001 |   10 |
+| Bhakti | Suresh  | Ratnani | 1005 | 2004-12-14 | Anand         | Female | 92345.69 |     1003 |   11 |
++--------+---------+---------+------+------------+---------------+--------+----------+----------+------+
+5 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.02 sec)
+
+
+SAME NAME PROCEDURE ERROR
+mysql> create procedure getemployee()
+    ->      begin
+    ->      select * from department;
+    ->     end//
+ERROR 1304 (42000): PROCEDURE getemployee already exists
+
+IN:
+mysql> create table deptsal as
+    ->      select Dnumber,0 as totalSalary from department;
+    ->      //
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from deptsal//
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |           0 |
+|      11 |           0 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+
+mysql>  create procedure totalsal2(IN param1 int)
+    ->      begin
+    ->      update deptsal
+    ->      set totalsalary= (select sum(salary) from emp where dno=param1)
+    ->      where dnumber=param1;
+    ->      end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call totalsal2(10);
+    -> //
+Query OK, 1 row affected (0.00 sec)
+
+mysql> call totalsal2(11)//
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from deptsal//
++---------+-------------+
+| Dnumber | totalSalary |
++---------+-------------+
+|      10 |      146047 |
+|      11 |      183391 |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+
+
+OUT:
+mysql> create procedure maxsal(out high_sal int)
+    ->      begin
+    ->      select max(salary) into high_sal from emp;
+    ->      end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call maxsal(@M)//
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select @M as Max_Salary//
++------------+
+| Max_Salary |
++------------+
+|      92346 |
++------------+
+1 row in set (0.00 sec)
+
+ERROR ON USING OUT CALL WITHOUT '@'
+mysql> call maxsal(M);
+ERROR 1054 (42S22): Unknown column 'M' in 'field list'
+
+
+
+INOUT:
+mysql> create procedure counter(inout count int, in increment int)
+    ->      begin
+    ->     SET count=count+increment;
+    ->      end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call COUNTER(@C,1)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select @C as count//
++-------+
+| count |
++-------+
+|  NULL |
++-------+
+1 row in set (0.00 sec)
+
+mysql> set @counter=0//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call counter(@counter,1)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select @counter as CUR_COUNT//
++-----------+
+| CUR_COUNT |
++-----------+
+|         1 |
++-----------+
+1 row in set (0.00 sec)
+
+
+
+FUNCTIONS
+
+mysql> create function myrand() returns int
+    ->      deterministic
+    ->      begin
+    ->     return round(rand()*10000,0);
+    ->      end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select myrand()//
++----------+
+| myrand() |
++----------+
+|       27 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select myrand()//
++----------+
+| myrand() |
++----------+
+|     1997 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select myrand()//
++----------+
+| myrand() |
++----------+
+|     9903 |
++----------+
+1 row in set (0.00 sec)
+
+
+
+
+DEFINE A FUNCTION THAT, GIVEN THE NAME OF A DEPARTMENT, RETURNS THE COUNT OF THE NUMBER IF EMPLOYEE IN THAT DEPARTMENT
+
+mysql> create function dept_count(dept_name varchar(20)) returns integer
+    -> deterministic
+    -> begin
+    -> declare d_count integer;
+    -> select count(*) into d_count
+    -> from emp as e, department as d
+    -> where e.dno=d.dnumber and d.dname=dept_name;
+    -> return d_count;
+    -> end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from department//
++-----------+---------+--------+----------------+
+| Dname     | Dnumber | MgrSSN | Mgr_start_date |
++-----------+---------+--------+----------------+
+| Research  |      10 |   1001 | 2018-06-01     |
+| Marketing |      11 |   1003 | 2020-01-05     |
++-----------+---------+--------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> select dept_count("Research")//
++------------------------+
+| dept_count("Research") |
++------------------------+
+|                      3 |
++------------------------+
+1 row in set (0.00 sec)

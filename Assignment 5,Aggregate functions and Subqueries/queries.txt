@@ -1,0 +1,1179 @@
+
+
+
+mysql> create database subquery_ass;
+Query OK, 1 row affected (0.03 sec)
+
+
+mysql> use subquery_ass;
+Database changed
+
+
+
+mysql> create table employees
+    ->      (emp_id int(3) primary key,
+    ->      First_Name varchar(15) not null,
+    ->      Last_Name varchar(15),
+    ->      email char(15),
+    ->      Hire_Date date,
+    ->     Job_ID varchar(8),
+    ->     Salary float(7,2),
+    ->      Comm_PCT float(3,2),
+    ->      Manager_ID int(3),
+    ->      Department_ID int(3),
+    ->      foreign key (Manager_ID) references employees(EMP_ID)
+    ->      );
+Query OK, 0 rows affected, 5 warnings (0.03 sec)
+
+
+
+mysql> create table departments(
+    ->      Dept_ID int(3) primary key,
+    ->      Dept_Name varchar(20),
+    ->      Mgr_ID int(3),
+    ->      Location_ID int(4),
+    ->      foreign key (Mgr_ID) references employee(Manager_ID));
+ERROR 1824 (HY000): Failed to open the referenced table 'employee'
+mysql> create table departments(
+    ->      Dept_ID int(3) primary key,
+    ->      Dept_Name varchar(20),
+    ->      Mgr_ID int(3),
+    ->      Location_ID int(4),
+    ->      foreign key (Mgr_ID) references employees(Manager_ID));
+Query OK, 0 rows affected, 3 warnings (0.03 sec)
+
+mysql> alter table employees add foreign key(Department_ID) references departments(Dept_ID);
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create table locations(
+    ->      Loc_ID int(4) primary key,
+    ->     Street_Add varchar(30),
+    ->     Postal_Code int(6),
+    ->     City varchar(20),
+    ->     State_Province varchar(20),
+    ->     Country_ID char(2));
+Query OK, 0 rows affected, 2 warnings (0.02 sec)
+
+mysql> create table countries(
+    ->     Country_id char(2) primary key,
+    ->     Country_Name varchar(15),
+    ->     Region_ID int(2));
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+mysql> alter table location add foreign key (Country_ID) references countries(Country_ID);
+ERROR 1146 (42S02): Table 'subquery_ass.location' doesn't exist
+mysql> alter table locations add foreign key (Country_ID) references countries(Country_ID);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> alter table departments add foreign key (location_id) references locations(Loc_ID);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ^C
+mysql> create table jobs (
+    ->     Job_ID varchar(15) primary key,
+    ->     Job_Title varchar(40),
+    ->     Min_Salary int(5),
+    ->     Max_Salary int(5));
+Query OK, 0 rows affected, 2 warnings (0.04 sec)
+
+mysql> alter table employees add foreign key (Job_ID) references jobs(JOB_ID);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create table Job_History(
+    -> Employee_ID int(3),
+    -> Start_Date date,
+    -> End_Date date,
+    -> Job_ID varchar(15),
+    -> Department_ID int(3),
+    -> foreign key (Job_ID) references jobs(Job_ID),
+    -> foreign key (Department_ID) references departments(Dept_ID));
+Query OK, 0 rows affected, 2 warnings (0.03 sec)
+
+
+
+
+insert into locations values
+(1001, '123 Street', 12345, 'New York', 'NY', 'US'),
+(1002, '456 Street', 23456, 'London', 'LDN', 'UK'),
+(1003, '789 Street', 34567, 'Paris', 'PRS', 'FR'),
+(1004, '4567 Street', 45678, 'Los Angeles', 'CA', 'US'),
+(1005, '8910 Street', 56789, 'Berlin', 'BR', 'DE'),
+(1006, '1112 Street', 67890, 'Tokyo', 'TK', 'JP');
+
+
+insert into employees (emp_id, First_Name, Last_Name, email, Hire_Date, Job_ID, Salary, Comm_PCT) values
+(101, 'John', 'Doe', 'john.doe', '2020-01-01', 'DEV', 60000.00, 0.05),
+(102, 'Jane', 'Smith', 'jane.smith', '2019-02-15', 'DEV', 80000.00, 0.10),
+(103, 'Michael', 'Johnson', 'michael.johnson', '2021-03-10', 'HR', 45000.00, 0.03),
+(104, 'Emily', 'Williams', 'emily.williams', '2018-05-20', 'ACCOUNTANT', 70000.00, 0.08),
+(105, 'William', 'Jones', 'william.jones', '2022-07-01', 'HR', 75000.00, 0.12),
+(106, 'Robert', 'Brown', 'robert.brown', '2022-08-10', 'DEV', 55000.00, 0.04),
+(107, 'Megan', 'Davis', 'megan.davis', '2023-03-18', 'ACCOUNTANT', 68000.00, 0.07),
+(108, 'Richard', 'Wilson', 'richard.wilson', '2019-11-05', 'HR', 48000.00, 0.03),
+(109, 'Jennifer', 'Martinez', 'jen.martinez', '2020-04-12', 'DEV', 65000.00, 0.09),
+(110, 'Daniel', 'Anderson', 'daniel.anderson', '2021-06-25', 'HR', 72000.00, 0.11);
+
+
+
+
+
+
+mysql> show tables;
++------------------------+
+| Tables_in_subquery_ass |
++------------------------+
+| countries              |
+| departments            |
+| employees              |
+| job_history            |
+| jobs                   |
+| locations              |
++------------------------+
+6 rows in set (0.01 sec)
+
+mysql> desc countries;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| Country_id   | char(2)     | NO   | PRI | NULL    |       |
+| Country_Name | varchar(15) | YES  |     | NULL    |       |
+| Region_ID    | int         | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> desc departments;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| Dept_ID     | int         | NO   | PRI | NULL    |       |
+| Dept_Name   | varchar(20) | YES  |     | NULL    |       |
+| Mgr_ID      | int         | YES  | MUL | NULL    |       |
+| Location_ID | int         | YES  | MUL | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> desc employees;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| emp_id        | int         | NO   | PRI | NULL    |       |
+| First_Name    | varchar(15) | NO   |     | NULL    |       |
+| Last_Name     | varchar(15) | YES  |     | NULL    |       |
+| email         | char(15)    | YES  |     | NULL    |       |
+| Hire_Date     | date        | YES  |     | NULL    |       |
+| Job_ID        | varchar(8)  | YES  | MUL | NULL    |       |
+| Salary        | float(7,2)  | YES  |     | NULL    |       |
+| Comm_PCT      | float(3,2)  | YES  |     | NULL    |       |
+| Manager_ID    | int         | YES  | MUL | NULL    |       |
+| Department_ID | int         | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+10 rows in set (0.00 sec)
+
+mysql> desc job_history;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| Employee_ID   | int         | YES  |     | NULL    |       |
+| Start_Date    | date        | YES  |     | NULL    |       |
+| End_Date      | date        | YES  |     | NULL    |       |
+| Job_ID        | varchar(15) | YES  | MUL | NULL    |       |
+| Department_ID | int         | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> desc jobs;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| Job_ID     | varchar(15) | NO   | PRI | NULL    |       |
+| Job_Title  | varchar(40) | YES  |     | NULL    |       |
+| Min_Salary | int         | YES  |     | NULL    |       |
+| Max_Salary | int         | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> desc locations;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| Loc_ID         | int         | NO   | PRI | NULL    |       |
+| Street_Add     | varchar(30) | YES  |     | NULL    |       |
+| Postal_Code    | int         | YES  |     | NULL    |       |
+| City           | varchar(20) | YES  |     | NULL    |       |
+| State_Province | varchar(20) | YES  |     | NULL    |       |
+| Country_ID     | char(2)     | YES  | MUL | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> insert jobs values
+    -> ('DEV', 'Developer', 50000, 120000),
+    -> ('HR', 'Human Resources Specialist', 40000, 90000),
+    -> ('ACCOUNTANT', 'Accountant', 60000, 110000);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into countries values
+    -> ('US', 'United States', 1),
+    -> ('UK', 'United Kingdom', 2),
+    -> ('FR', 'France', 3),
+    -> ('DE', 'Germany', 4),
+    -> ('JP', 'Japan', 5);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> insert into locations values
+    -> (1001, '123 Street', 12345, 'New York', 'NY', 'US'),
+    -> (1002, '456 Street', 23456, 'London', 'LDN', 'UK'),
+    -> (1003, '789 Street', 34567, 'Paris', 'PRS', 'FR'),
+    -> (1004, '4567 Street', 45678, 'Los Angeles', 'CA', 'US'),
+    -> (1005, '8910 Street', 56789, 'Berlin', 'BR', 'DE'),
+    -> (1006, '1112 Street', 67890, 'Tokyo', 'TK', 'JP');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> insert into employees (emp_id, First_Name, Last_Name, email, Hire_Date, Job_ID, Salary, Comm_PCT) values
+    -> (101, 'John', 'Doe', 'john.doe', '2020-01-01', 'DEV', 60000.00, 0.05),
+    -> (102, 'Jane', 'Smith', 'jane.smith', '2019-02-15', 'DEV', 80000.00, 0.10),
+    -> (103, 'Michael', 'Johnson', 'michael.johnson', '2021-03-10', 'HR', 45000.00, 0.03),
+    -> (104, 'Emily', 'Williams', 'emily.williams', '2018-05-20', 'ACCOUNTANT', 70000.00, 0.08),
+    -> (105, 'William', 'Jones', 'william.jones', '2022-07-01', 'HR', 75000.00, 0.12),
+    -> (106, 'Robert', 'Brown', 'robert.brown', '2022-08-10', 'DEV', 55000.00, 0.04),
+    -> (107, 'Megan', 'Davis', 'megan.davis', '2023-03-18', 'ACCOUNTANT', 68000.00, 0.07),
+    -> (108, 'Richard', 'Wilson', 'richard.wilson', '2019-11-05', 'HR', 48000.00, 0.03),
+    -> (109, 'Jennifer', 'Martinez', 'jen.martinez', '2020-04-12', 'DEV', 65000.00, 0.09),
+    -> (110, 'Daniel', 'Anderson', 'daniel.anderson', '2021-06-25', 'HR', 72000.00, 0.11);
+Query OK, 10 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO departments VALUES
+    -> (1, 'Engineering', 101, 1001),
+    -> (2, 'Human Resources', 102, 1002),
+    -> (3, 'Accounting', 103, 1003),
+    -> (4, 'Research and Development', 101, 1001),
+    -> (5, 'Marketing', 102, 1002),
+    -> (6, 'Sales', 103, 1003);
+
+mysql> INSERT INTO Job_History (Employee_ID, Start_Date, End_Date, Job_ID, Department_ID) VALUES
+    -> (101, '2020-01-01', '2021-01-01', 'DEV', 1),
+    -> (102, '2019-02-15', '2020-02-15', 'DEV', 1),
+    -> (103, '2021-03-10', '2022-03-10', 'HR', 2),
+    -> (104, '2018-05-20', '2019-05-20', 'ACCOUNTANT', 2),
+    -> (105, '2022-07-01', '2023-07-01', 'HR', 3),
+    -> (106, '2022-08-10', '2023-08-10', 'DEV', 4),
+    -> (107, '2023-03-18', '2024-03-18', 'ACCOUNTANT', 5),
+    -> (108, '2019-11-05', '2020-11-05', 'HR', 6),
+    -> (109, '2020-04-12', '2021-04-12', 'DEV', 6),
+    -> (110, '2021-06-25', '2022-06-25', 'HR', 5);
+Query OK, 10 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> select * from job_history;
++-------------+------------+------------+------------+---------------+
+| Employee_ID | Start_Date | End_Date   | Job_ID     | Department_ID |
++-------------+------------+------------+------------+---------------+
+|         101 | 2020-01-01 | 2021-01-01 | DEV        |             1 |
+|         102 | 2019-02-15 | 2020-02-15 | DEV        |             1 |
+|         103 | 2021-03-10 | 2022-03-10 | HR         |             2 |
+|         104 | 2018-05-20 | 2019-05-20 | ACCOUNTANT |             2 |
+|         105 | 2022-07-01 | 2023-07-01 | HR         |             3 |
+|         106 | 2022-08-10 | 2023-08-10 | DEV        |             4 |
+|         107 | 2023-03-18 | 2024-03-18 | ACCOUNTANT |             5 |
+|         108 | 2019-11-05 | 2020-11-05 | HR         |             6 |
+|         109 | 2020-04-12 | 2021-04-12 | DEV        |             6 |
+|         110 | 2021-06-25 | 2022-06-25 | HR         |             5 |
++-------------+------------+------------+------------+---------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from jobs;
++------------+----------------------------+------------+------------+
+| Job_ID     | Job_Title                  | Min_Salary | Max_Salary |
++------------+----------------------------+------------+------------+
+| ACCOUNTANT | Accountant                 |      60000 |     110000 |
+| DEV        | Developer                  |      50000 |     120000 |
+| HR         | Human Resources Specialist |      40000 |      90000 |
++------------+----------------------------+------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from locations;
++--------+-------------+-------------+-------------+----------------+------------+
+| Loc_ID | Street_Add  | Postal_Code | City        | State_Province | Country_ID |
++--------+-------------+-------------+-------------+----------------+------------+
+|   1001 | 123 Street  |       12345 | New York    | NY             | US         |
+|   1002 | 456 Street  |       23456 | London      | LDN            | UK         |
+|   1003 | 789 Street  |       34567 | Paris       | PRS            | FR         |
+|   1004 | 4567 Street |       45678 | Los Angeles | CA             | US         |
+|   1005 | 8910 Street |       56789 | Berlin      | BR             | DE         |
+|   1006 | 1112 Street |       67890 | Tokyo       | TK             | JP         |
++--------+-------------+-------------+-------------+----------------+------------+
+6 rows in set (0.00 sec)
+
+
+
+mysql> select * from countries;
++------------+----------------+-----------+
+| Country_id | Country_Name   | Region_ID |
++------------+----------------+-----------+
+| DE         | Germany        |         4 |
+| FR         | France         |         3 |
+| JP         | Japan          |         5 |
+| UK         | United Kingdom |         2 |
+| US         | United States  |         1 |
++------------+----------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from departments;
++---------+--------------------------+--------+-------------+
+| Dept_ID | Dept_Name                | Mgr_ID | Location_ID |
++---------+--------------------------+--------+-------------+
+|       1 | Engineering              |    101 |        1001 |
+|       2 | Human Resources          |    102 |        1002 |
+|       3 | Accounting               |    103 |        1003 |
+|       4 | Research and Development |    101 |        1001 |
+|       5 | Marketing                |    102 |        1002 |
+|       6 | Sales                    |    103 |        1003 |
++---------+--------------------------+--------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employees;
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID     | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+|    101 | John       | Doe       | john.doe        | 2020-01-01 | DEV        | 60000.00 |     0.05 |       NULL |             4 |
+|    102 | Jane       | Smith     | jane.smith      | 2019-02-15 | DEV        | 80000.00 |     0.10 |        101 |             4 |
+|    103 | Michael    | Johnson   | michael.johnson | 2021-03-10 | HR         | 45000.00 |     0.03 |        101 |             6 |
+|    104 | Emily      | Williams  | emily.williams  | 2018-05-20 | ACCOUNTANT | 70000.00 |     0.08 |        102 |             5 |
+|    105 | William    | Jones     | william.jones   | 2022-07-01 | HR         | 75000.00 |     0.12 |        102 |             6 |
+|    106 | Robert     | Brown     | robert.brown    | 2022-08-10 | DEV        | 55000.00 |     0.04 |        101 |             4 |
+|    107 | Megan      | Davis     | megan.davis     | 2023-03-18 | ACCOUNTANT | 68000.00 |     0.07 |        104 |             5 |
+|    108 | Richard    | Wilson    | richard.wilson  | 2019-11-05 | HR         | 48000.00 |     0.03 |        103 |             6 |
+|    109 | Jennifer   | Martinez  | jen.martinez    | 2020-04-12 | DEV        | 65000.00 |     0.09 |        102 |             4 |
+|    110 | Daniel     | Anderson  | daniel.anderson | 2021-06-25 | HR         | 72000.00 |     0.11 |        105 |             6 |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+10 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1)Write a query to display the name (first name and last name) for those employees who
+gets more salary than the employee whose ID is 109.
+
+
+mysql> select first_name, last_name
+    -> from employees
+    -> where salary > (select salary from employees where emp_id=109);
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| Jane       | Smith     |
+| Emily      | Williams  |
+| William    | Jones     |
+| Megan      | Davis     |
+| Daniel     | Anderson  |
++------------+-----------+
+5 rows in set (0.00 sec)
+
+
+
+2)Write a query to display the name (first name and last name), salary, department id,
+job id for those employees who works in the same designation as the employee works
+whose id is 103.
+
+
+mysql> select first_name, last_name, salary, department_id, job_id
+    -> from employees
+    -> WHERE job_id = (select job_id from employees where emp_id = 169);
+Empty set (0.00 sec)
+
+
+
+
+3)Write a query to display the name (first name and last name), salary, department id for
+those employees who earn such amount of salary which is the smallest salary of any
+of the departments.
+
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary in (select min(salary) from employees group by department_id);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Michael    | Johnson   | 45000.00 |             6 |
+| Robert     | Brown     | 55000.00 |             4 |
+| Megan      | Davis     | 68000.00 |             5 |
++------------+-----------+----------+---------------+
+3 rows in set (0.00 sec)
+
+
+4)Write a query to display the employee id, employee name (first name and last name)
+for all employees who earn more than the average salary.
+
+mysql> select emp_id, first_name, last_name
+    -> from employees
+    -> where salary > (select avg(salary) from employees);
++--------+------------+-----------+
+| emp_id | first_name | last_name |
++--------+------------+-----------+
+|    102 | Jane       | Smith     |
+|    104 | Emily      | Williams  |
+|    105 | William    | Jones     |
+|    107 | Megan      | Davis     |
+|    109 | Jennifer   | Martinez  |
+|    110 | Daniel     | Anderson  |
++--------+------------+-----------+
+6 rows in set (0.00 sec)
+
+
+
+5)Write a query to display the employee name (first name and last name), employee id
+and salary of all employees who report to William.
+
+mysql> select first_name, last_name, emp_id, salary
+    -> from employees
+    -> where manager_id = (select emp_id from employees where first_name = 'William');
++------------+-----------+--------+----------+
+| first_name | last_name | emp_id | salary   |
++------------+-----------+--------+----------+
+| Daniel     | Anderson  |    110 | 72000.00 |
++------------+-----------+--------+----------+
+1 row in set (0.00 sec)
+
+
+
+6)Write a query to display the department number, name (first name and last name),
+job_id and department name for all employees in the Finance department or
+Purchasing department . (Use SET operator)
+
+
+
+
+7)Write a query to display all the information of an employee whose salary and
+reporting person id is 3000 and 101, respectively.
+
+mysql> select *
+    -> from employees
+    -> where salary = 3000 and manager_id = 101;
+Empty set (0.00 sec)
+
+
+
+8)Display all the information of an employee whose id is any of the number 104, 109
+and 103.
+
+mysql> select *
+    -> from employees
+    -> where emp_id IN (104, 109, 103);
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID     | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+|    103 | Michael    | Johnson   | michael.johnson | 2021-03-10 | HR         | 45000.00 |     0.03 |        101 |             6 |
+|    104 | Emily      | Williams  | emily.williams  | 2018-05-20 | ACCOUNTANT | 70000.00 |     0.08 |        102 |             5 |
+|    109 | Jennifer   | Martinez  | jen.martinez    | 2020-04-12 | DEV        | 65000.00 |     0.09 |        102 |             4 |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+3 rows in set (0.00 sec)
+
+
+
+9)Write a query to display all the information of the employees whose salary is within
+the range 10000 and 30000.
+
+mysql> select *
+    -> from employees
+    -> where salary between 1000 and 3000;
+Empty set (0.00 sec)
+
+
+10)Write a query to display all the information of the employees whose salary is within
+the range of smallest salary and 45000. (Hint: use BETWEEN)
+
+
+mysql> select *
+    -> from employees
+    -> where salary between (select min(salary) from employees) and 45000;
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+|    103 | Michael    | Johnson   | michael.johnson | 2021-03-10 | HR     | 45000.00 |     0.03 |        101 |             6 |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+1 row in set (0.00 sec)
+
+
+11)Write a query to display all the information of the employees who does not work in
+those departments where some employees works whose manager id within the range
+100 and 104. (Hint: use NOT IN)
+
+mysql> select *
+    -> from employees
+    -> where department_id not in (select department_id from employees where manager_id between 100 AND 104);
+Empty set (0.00 sec)
+
+
+
+12)Write a query to display all the information for those employees whose id is any id
+who earn the second highest salary.
+
+
+
+13)Write a query to display the employee name (first name and last name) and hire date
+for all employees in the same department as Jane. Exclude Jane.
+
+select first_name, last_name, hire_date
+from employees
+where department_id in (select department_id from employees where first_name = 'Jane') and first_name != 'Jane';
+
+mysql> select first_name, last_name, hire_date
+    -> from employees
+    -> where department_id in (select department_id from employees where first_name = 'Jane') and first_name != 'Jane';
++------------+-----------+------------+
+| first_name | last_name | hire_date  |
++------------+-----------+------------+
+| John       | Doe       | 2020-01-01 |
+| Robert     | Brown     | 2022-08-10 |
+| Jennifer   | Martinez  | 2020-04-12 |
++------------+-----------+------------+
+3 rows in set (0.00 sec)
+
+14)Write a query to display the employee number and name (first name and last name)
+for all employees who work in a department with any employee whose name contains
+a T. (Hint: Use of String operator)
+
+mysql> select emp_id, first_name, last_name
+    -> from employees
+    -> where department_id in (select department_id
+    -> from employees
+    -> where first_name like '%T%');
++--------+------------+-----------+
+| emp_id | first_name | last_name |
++--------+------------+-----------+
+|    101 | John       | Doe       |
+|    102 | Jane       | Smith     |
+|    106 | Robert     | Brown     |
+|    109 | Jennifer   | Martinez  |
++--------+------------+-----------+
+
+
+
+15)Write a query to display the employee number, name (first name and last name), and
+salary for all employees who earn more than the average salary and who work in a
+department with any employee with a J in their name.(Hint: Use of String operator)
+
+
+mysql> select emp_id, first_name, last_name, salary
+    -> from employees
+    -> where salary > (select avg(salary) from employees)
+    -> and department_id IN (SELECT department_id from employees
+    ->  where first_name like '%J%');
++--------+------------+-----------+----------+
+| emp_id | first_name | last_name | salary   |
++--------+------------+-----------+----------+
+|    102 | Jane       | Smith     | 80000.00 |
+|    109 | Jennifer   | Martinez  | 65000.00 |
++--------+------------+-----------+----------+
+2 rows in set (0.00 sec)
+
+
+16)Display the employee name (first name and last name), employee id, and job title for
+all employees whose department location is London.
+
+
+mysql> select first_name, last_name, emp_id, job_title
+    -> from employees
+    -> join jobs on employees.job_id = jobs.job_id
+    -> join departments on employees.department_id=departments.dept_id
+    ->  join locations ON departments.location_id = locations.loc_id
+    -> where locations.city = 'London';
++------------+-----------+--------+------------+
+| first_name | last_name | emp_id | job_title  |
++------------+-----------+--------+------------+
+| Emily      | Williams  |    104 | Accountant |
+| Megan      | Davis     |    107 | Accountant |
++------------+-----------+--------+------------+
+2 rows in set (0.00 sec)
+
+
+17)Write a query to display the employee number, name (first name and last name) and
+job title for all employees whose salary is smaller than any salary of those employees
+whose job title is ACCOUNTANT. (Hint: use of ANY)
+
+mysql> select emp_id, first_name, last_name, job_title
+    -> FROM employees
+    -> JOIN jobs ON employees.job_id = jobs.job_id
+    -> where salary>any (select salary from employees where job_title = 'ACCOUNTANT');
++--------+------------+-----------+------------+
+| emp_id | first_name | last_name | job_title  |
++--------+------------+-----------+------------+
+|    104 | Emily      | Williams  | Accountant |
+|    107 | Megan      | Davis     | Accountant |
++--------+------------+-----------+------------+
+2 rows in set (0.00 sec)
+
+
+18)Write a query to display the employee number, name (first name and last name) and
+job title for all employees whose salary is smaller than any salary of those employees
+whose job title is MK_MAN. Exclude Job title MK_MAN. (Hint: use of ANY)
+
+
+
+19)Write a query to display the employee number, name (first name and last name) and
+job title for all employees whose salary is more than any salary of those employees
+whose job title is PU_MAN. Exclude job title PU_MAN. (Hint: use of ANY)
+
+
+mysql> select emp_id, first_name, last_name, job_title
+    -> from employees
+    -> join jobs ON employees.job_id = jobs.job_id
+    -> where salary > any (select salary from employees where job_title = 'HR') AND job_title != 'HR';
+Empty set (0.00 sec)
+
+
+20) Write a query to display the employee number, name (first name and last name) and
+job title for all employees whose salary is more than any average salary of any
+department. (Hint: Make use of any and group by clause)
+
+
+SELECT emp_id, first_name, last_name, job_title
+FROM employee
+ JOIN jobs ON employee.job_id = jobs.job_id
+WHERE salary > ANY (SELECT AVG(salary) FROM employee GROUP BY department_id);
+
+
+21. Write a query to display the employee name( first name and last name ) and
+department for all employees for any existence of those employees whose salary is
+more than 77000. (Hint: Exists)
+
+
+mysql> select First_Name, Last_Name, Department_ID
+    -> from employees
+    -> where exists (select emp_id from employees WHERE Salary > 77000);
++------------+-----------+---------------+
+| First_Name | Last_Name | Department_ID |
++------------+-----------+---------------+
+| John       | Doe       |             4 |
+| Jane       | Smith     |             4 |
+| Michael    | Johnson   |             6 |
+| Emily      | Williams  |             5 |
+| William    | Jones     |             6 |
+| Robert     | Brown     |             4 |
+| Megan      | Davis     |             5 |
+| Richard    | Wilson    |             6 |
+| Jennifer   | Martinez  |             4 |
+| Daniel     | Anderson  |             6 |
++------------+-----------+---------------+
+10 rows in set (0.00 sec)
+
+22. Write a query to display the department id and the total salary for those departments
+which contains at least one employee. (Hint: Group by having)
+
+mysql> select Department_ID, SUM(Salary) AS Total_Salary
+    -> FROM employees
+    -> GROUP BY Department_ID
+    -> HAVING COUNT(*) > 0;
++---------------+--------------+
+| Department_ID | Total_Salary |
++---------------+--------------+
+|             4 |    260000.00 |
+|             5 |    138000.00 |
+|             6 |    240000.00 |
++---------------+--------------+
+3 rows in set (0.00 sec)
+
+23. Write a subquery that returns a set of rows to find all departments that do actually
+have one or more employees assigned to them.
+
+mysql> SELECT *
+    -> FROM departments
+    -> WHERE Dept_ID IN (
+    ->     SELECT DISTINCT Department_ID
+    ->     FROM employees
+    -> );
++---------+--------------------------+--------+-------------+
+| Dept_ID | Dept_Name                | Mgr_ID | Location_ID |
++---------+--------------------------+--------+-------------+
+|       4 | Research and Development |    101 |        1001 |
+|       5 | Marketing                |    102 |        1002 |
+|       6 | Sales                    |    103 |        1003 |
++---------+--------------------------+--------+-------------+
+3 rows in set (0.00 sec)
+
+
+
+24. Write a query that will identify all employees who work in departments located in the
+United Kingdom.
+
+
+mysql> select employees.first_name, employees.last_name, departments.dept_id
+
+    -> from employees
+    -> join departments on employees.department_id = departments.dept_id
+    -> join locations on departments.location_id = locations.loc_id
+    -> join countries on locations.country_id = countries.country_id
+    -> where countries.country_name = 'United Kingdom';
++------------+-----------+---------+
+| first_name | last_name | dept_id |
++------------+-----------+---------+
+| Emily      | Williams  |       5 |
+| Megan      | Davis     |       5 |
++------------+-----------+---------+
+2 rows in set (0.00 sec)
+
+25. Write a query to identify all the employees who earn more than the average and who
+work in any of the IT departments. (Hint: Strint operator %)
+
+mysql> select *
+    -> from employees
+    -> where salary > (select avg(salary) from employees)
+    -> and department_id in (select dept_id from departments where dept_name like '%IT%');
+Empty set (0.00 sec)
+
+
+26. Write a query to determine who earns more than “Richard”.
+
+mysql> select *
+    -> from employees
+    -> where salary > (select salary from employees where first_name = 'Richard');
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID     | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+|    101 | John       | Doe       | john.doe        | 2020-01-01 | DEV        | 60000.00 |     0.05 |       NULL |             4 |
+|    102 | Jane       | Smith     | jane.smith      | 2019-02-15 | DEV        | 80000.00 |     0.10 |        101 |             4 |
+|    104 | Emily      | Williams  | emily.williams  | 2018-05-20 | ACCOUNTANT | 70000.00 |     0.08 |        102 |             5 |
+|    105 | William    | Jones     | william.jones   | 2022-07-01 | HR         | 75000.00 |     0.12 |        102 |             6 |
+|    106 | Robert     | Brown     | robert.brown    | 2022-08-10 | DEV        | 55000.00 |     0.04 |        101 |             4 |
+|    107 | Megan      | Davis     | megan.davis     | 2023-03-18 | ACCOUNTANT | 68000.00 |     0.07 |        104 |             5 |
+|    109 | Jennifer   | Martinez  | jen.martinez    | 2020-04-12 | DEV        | 65000.00 |     0.09 |        102 |             4 |
+|    110 | Daniel     | Anderson  | daniel.anderson | 2021-06-25 | HR         | 72000.00 |     0.11 |        105 |             6 |
++--------+------------+-----------+-----------------+------------+------------+----------+----------+------------+---------------+
+8 rows in set (0.00 sec)
+
+
+27. Write a query to find out which employees have a manager who works for a
+department based in the US. ( 3 nested subqueries)
+
+select *
+from employees
+where manager_id in 
+mysql> (select emp_id
+    -> from employees
+    -> where department_id in (select dept_id
+    ->from departments
+    -> where location_id in (select loc_id
+    ->from locations
+    ->where country_id = 'US')));
++--------+
+| emp_id |
++--------+
+|    101 |
+|    102 |
+|    106 |
+|    109 |
++--------+
+4 rows in set (0.00 sec)
+
+
+28. Write a query which is looking for the names of all employees whose salary is greater
+than 50% of their department’s total salary bill. (Hint: use alias for tables)
+
+mysql> SELECT employees.first_name, employees.last_name
+    -> FROM employees
+    -> JOIN (SELECT department_id, SUM(salary) AS total_salary
+    ->       FROM employees
+    ->       GROUP BY department_id) AS departments
+    -> ON employees.department_id = departments.department_id
+    -> WHERE employees.salary > 0.5 * departments.total_salary;
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| Emily      | Williams  |
++------------+-----------+
+1 row in set (0.00 sec);
+
+
+29. Write a query to get the details of employees who are managers.
+mysql> select * from employees
+    -> where emp_id in(select distinct Mgr_Id from departments);
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+|    101 | John       | Doe       | john.doe        | 2020-01-01 | DEV    | 60000.00 |     0.05 |       NULL |             4 |
+|    102 | Jane       | Smith     | jane.smith      | 2019-02-15 | DEV    | 80000.00 |     0.10 |        101 |             4 |
+|    103 | Michael    | Johnson   | michael.johnson | 2021-03-10 | HR     | 45000.00 |     0.03 |        101 |             6 |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+3 rows in set (0.00 sec)
+
+30. Write a query to get the details of employees who manage a department. (Hint: make
+use of ANY)
+mysql> select * from employees
+    -> where emp_id=any(select Mgr_Id from departments);
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email           | Hire_Date  | Job_ID | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+|    101 | John       | Doe       | john.doe        | 2020-01-01 | DEV    | 60000.00 |     0.05 |       NULL |             4 |
+|    102 | Jane       | Smith     | jane.smith      | 2019-02-15 | DEV    | 80000.00 |     0.10 |        101 |             4 |
+|    103 | Michael    | Johnson   | michael.johnson | 2021-03-10 | HR     | 45000.00 |     0.03 |        101 |             6 |
++--------+------------+-----------+-----------------+------------+--------+----------+----------+------------+---------------+
+3 rows in set (0.00 sec)
+
+
+31. Write a query to display the employee id, name (first name and last name), salary,
+department name and city for all the employees who have either joined on January
+1st, 2002 or December 31st, 2003.(Hint: use SET Operation)
+
+32. Write a query in SQL to display the department code and name for all departments
+which located in the city London.
+mysql> select dept_id, dept_name
+    -> from departments
+    -> join locations on departments.location_id = locations.loc_id
+    -> where city = 'London';
++---------+-----------------+
+| dept_id | dept_name       |
++---------+-----------------+
+|       2 | Human Resources |
+|       5 | Marketing       |
++---------+-----------------+
+2 rows in set (0.00 sec)
+
+
+
+33. Write a query in SQL to display the first and last name, salary, and department ID for
+all those employees who earn more than the average salary and arrange the list in
+descending order on salary. (Hint: order by and aggregate function)
+
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary > (select avg(salary) from employees)
+    -> order by salary desc;
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Jane       | Smith     | 80000.00 |             4 |
+| William    | Jones     | 75000.00 |             6 |
+| Daniel     | Anderson  | 72000.00 |             6 |
+| Emily      | Williams  | 70000.00 |             5 |
+| Megan      | Davis     | 68000.00 |             5 |
+| Jennifer   | Martinez  | 65000.00 |             4 |
++------------+-----------+----------+---------------+
+6 rows in set (0.00 sec)
+
+34. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees who earn more than the maximum salary of a department which ID
+is 6. 
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary > (select max(salary) from employees where department_id = 6);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Jane       | Smith     | 80000.00 |             4 |
++------------+-----------+----------+---------------+
+1 row in set (0.00 sec)
+
+
+35. Write a query in SQL to display the department name and Id for all departments
+where they located, that Id is equal to the Id for the location where department
+number 30 is located.
+mysql> select dept_name, dept_id
+    -> from departments
+    -> join locations on departments.location_id = locations.loc_id
+    -> where loc_id = (select location_id from departments where dept_id = 3);
++------------+---------+
+| dept_name  | dept_id |
++------------+---------+
+| Accounting |       3 |
+| Sales      |       6 |
++------------+---------+
+2 rows in set (0.00 sec)
+
+
+
+36. Write a query in SQL to display the first and last name, salary, and department ID for
+all those employees who work in that department where the employee works who
+hold the ID 101.
+
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> join departments on employees.department_id = departments.dept_id
+    -> where dept_id = (select department_id
+    -> from employees where emp_id = 101);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| John       | Doe       | 60000.00 |             4 |
+| Jane       | Smith     | 80000.00 |             4 |
+| Robert     | Brown     | 55000.00 |             4 |
+| Jennifer   | Martinez  | 65000.00 |             4 |
++------------+-----------+----------+---------------+
+4 rows in set (0.00 sec)
+
+37. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees whose salary is equal to the salary of the employee who works in
+that department which ID is 40.
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary in(select salary from employees where department_id = 4);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| John       | Doe       | 60000.00 |             4 |
+| Jane       | Smith     | 80000.00 |             4 |
+| Robert     | Brown     | 55000.00 |             4 |
+| Jennifer   | Martinez  | 65000.00 |             4 |
++------------+-----------+----------+---------------+
+4 rows in set (0.00 sec)
+
+
+38. Write a query in SQL to display the first and last name, and department code for all
+employees who work in the department Marketing.
+
+mysql> select first_name, last_name, department_id
+    -> from employees
+    -> join departments on employees.department_id = departments.dept_id
+    -> where dept_name = 'Marketing';
++------------+-----------+---------------+
+| first_name | last_name | department_id |
++------------+-----------+---------------+
+| Emily      | Williams  |             5 |
+| Megan      | Davis     |             5 |
++------------+-----------+---------------+
+2 rows in set (0.00 sec)
+
+
+39. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees who earn more than the minimum salary of a department which ID is
+3.
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary > (select min(salary) from employees where department_id = 5);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Jane       | Smith     | 80000.00 |             4 |
+| Emily      | Williams  | 70000.00 |             5 |
+| William    | Jones     | 75000.00 |             6 |
+| Daniel     | Anderson  | 72000.00 |             6 |
++------------+-----------+----------+---------------+
+4 rows in set (0.00 sec)s
+
+
+40. Write a query in SQL to display the full name, email, and hire date for all those
+employees who was hired after the employee whose ID is 165. *(Use concat function
+in select clause)
+
+mysql> select concat(first_name, ' ', last_name) as full_name, email, hire_date
+    -> from employees
+    -> where hire_date > (select hire_date from employees where emp_id = 105);
++--------------+--------------+------------+
+| full_name    | email        | hire_date  |
++--------------+--------------+------------+
+| Robert Brown | robert.brown | 2022-08-10 |
+| Megan Davis  | megan.davis  | 2023-03-18 |
++--------------+--------------+------------+
+2 rows in set (0.00 sec)
+
+
+41. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees who earn less than the minimum salary of a department which ID is
+70.
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> where salary < (select min(salary) from employees where department_id = 4);
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Michael    | Johnson   | 45000.00 |             6 |
+| Richard    | Wilson    | 48000.00 |             6 |
++------------+-----------+----------+---------------+
+2 rows in set (0.00 sec)
+
+
+
+42. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees who earn less than the average salary, and also work at the
+department where the employee Emily is working as a first name holder. (Hint use 2
+nested queries with &lt; and = operator with avg)
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> join departments on employees.department_id = departments.dept_id
+    -> where salary < (select avg(salary) from employees where department_id = (select department_id from employees where first_name = 'Emily'));
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| John       | Doe       | 60000.00 |             4 |
+| Michael    | Johnson   | 45000.00 |             6 |
+| Robert     | Brown     | 55000.00 |             4 |
+| Megan      | Davis     | 68000.00 |             5 |
+| Richard    | Wilson    | 48000.00 |             6 |
+| Jennifer   | Martinez  | 65000.00 |             4 |
++------------+-----------+----------+---------------+
+6 rows in set (0.00 sec)
+
+
+
+43. Write a query in SQL to display the first and last name, salary, and department ID for
+those employees whose department is located in the city London.
+
+mysql> select first_name, last_name, salary, department_id
+    -> from employees
+    -> join departments on employees.department_id = departments.dept_id
+    -> join locations on departments.location_id = locations.loc_id
+    -> where city = 'London';
++------------+-----------+----------+---------------+
+| first_name | last_name | salary   | department_id |
++------------+-----------+----------+---------------+
+| Emily      | Williams  | 70000.00 |             5 |
+| Megan      | Davis     | 68000.00 |             5 |
++------------+-----------+----------+---------------+
+2 rows in set (0.00 sec)
+
+44. Write a query in SQL to display the city of the employee whose ID 134 and works
+there. (Hint: use nested IN)
+
+mysql> select city
+    -> from locations
+    -> where loc_id in (select location_id from departments where dept_id in (select department_id from employees where emp_id = 134));
+Empty set (0.00 sec)
+
+
+45. Write a query in SQL to display the the details of those departments which max salary
+is 7000 or above for those employees who already done one or more jobs. (Hint:
+Group By , Having)
+
+
+mysql> select departments.dept_id, departments.dept_name, max(employees.salary) as max_salary
+    -> from departments
+    -> join employees on departments.dept_id = employees.department_id
+    -> group by departments.dept_id, departments.dept_name
+    -> having count(employees.emp_id) > 1 and max(employees.salary) >= 7000;
++---------+--------------------------+------------+
+| dept_id | dept_name                | max_salary |
++---------+--------------------------+------------+
+|       4 | Research and Development |   80000.00 |
+|       6 | Sales                    |   75000.00 |
+|       5 | Marketing                |   70000.00 |
++---------+--------------------------+------------+
+3 rows in set (0.00 sec)
+
+
+
+46. Write a query in SQL to display the detail information of those departments which
+starting salary is at least 8000. (Hint: Group By, Having)
+
+mysql> select departments.dept_id, departments.dept_name, MIN(employees.salary) AS starting_salary
+    -> from departments
+    -> JOIN employees ON departments.dept_id = employees.department_id
+    -> GROUP BY departments.dept_id, departments.dept_name
+    -> HAVING MIN(employees.salary) >= 8000;
++---------+--------------------------+-----------------+
+| dept_id | dept_name                | starting_salary |
++---------+--------------------------+-----------------+
+|       4 | Research and Development |        55000.00 |
+|       6 | Sales                    |        45000.00 |
+|       5 | Marketing                |        68000.00 |
++---------+--------------------------+-----------------+
+3 rows in set (0.00 sec)
+
+
+47. Write a query in SQL to display the full name (first and last name) of manager who is
+supervising 4 or more employees. (concat subject, count function)
+
+mysql> SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS manager_name
+    -> FROM employees
+    -> WHERE emp_id IN (
+    ->     SELECT manager_id
+    ->     FROM employees
+    ->     GROUP BY manager_id
+    ->     HAVING COUNT(emp_id) >= 4
+    -> );
+Empty set (0.00 sec)
+
+48. Write a query in SQL to display the details of the current job for those employees who
+worked as a Sales Representative in the past.
+
+
+
+49. Write a query in SQL to display all the information about those employees who earn
+second lowest salary of all the employees.
+
+mysql> select *
+    -> from employees
+    -> where salary = (
+    ->     select distinct salary
+    ->     from employees
+    ->     order by salary
+    ->     limit 1 offset 1
+    -> );
++--------+------------+-----------+----------------+------------+--------+----------+----------+------------+---------------+
+| emp_id | First_Name | Last_Name | email          | Hire_Date  | Job_ID | Salary   | Comm_PCT | Manager_ID | Department_ID |
++--------+------------+-----------+----------------+------------+--------+----------+----------+------------+---------------+
+|    108 | Richard    | Wilson    | richard.wilson | 2019-11-05 | HR     | 48000.00 |     0.03 |        103 |             6 |
++--------+------------+-----------+----------------+------------+--------+----------+----------+------------+---------------+
+1 row in set (0.00 sec)
+
+50. Write a query in SQL to display the details of departments managed by John.
+
+mysql> SELECT *
+    -> FROM departments
+    -> WHERE dept_id IN (
+    ->     SELECT department_id
+    ->     FROM employees
+    ->     WHERE first_name = 'John' AND emp_id IN (SELECT mgr_id FROM departments)
+    -> );
++---------+--------------------------+--------+-------------+
+| Dept_ID | Dept_Name                | Mgr_ID | Location_ID |
++---------+--------------------------+--------+-------------+
+|       4 | Research and Development |    101 |        1001 |
++---------+--------------------------+--------+-------------+
+1 row in set (0.00 sec)
+
+
+
+51. Write a query in SQL to display the department ID, full name (first and last name),
+salary for those employees who is highest salary drawer in a department. (Hint: use
+concat function )
+
+mysql> select department_id, concat(first_name, ' ', last_name) as full_name, salary
+    -> from employees
+    -> where salary in (select max(salary) from employees group by department_id);
++---------------+----------------+----------+
+| department_id | full_name      | salary   |
++---------------+----------------+----------+
+|             4 | Jane Smith     | 80000.00 |
+|             5 | Emily Williams | 70000.00 |
+|             6 | William Jones  | 75000.00 |
++---------------+----------------+----------+
+3 rows in set (0.00 sec)
+
+
+
+
+52. Write a query in SQL to display all the information of those employees who did not
+have any job in the past.
+
+mysql> SELECT *
+    -> FROM employees
+    -> WHERE NOT EXISTS (SELECT 1 FROM job_history WHERE job_history.employee_id = employees.emp_id);
+Empty set (0.00 sec)
+

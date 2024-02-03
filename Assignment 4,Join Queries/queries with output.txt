@@ -1,0 +1,347 @@
+mysql> create database unidb
+    -> ;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use unidb;
+Database changed
+mysql> create table room
+    -> ( roomno int (3) primary key,
+    -> capacity int(3),
+    -> building varchar(5));
+Query OK, 0 rows affected, 2 warnings (0.02 sec)
+
+
+mysql> create table course
+    -> ( courseno int (5) primary key,
+    -> name varchar(10),
+    -> department varchar(10));
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+
+
+mysql> create table section
+    ->      (cno int(5),
+    ->      secno int(3) primary key,
+    ->      enrollment int(3));
+Query OK, 0 rows affected, 3 warnings (0.02 sec)
+
+mysql> create table exam
+    ->      ( cnum int(5),
+    ->      sno int(3),
+    ->      rno int(3),
+    ->      timing time,
+    ->      foreign key (cnum) references course(courseno),
+    ->      foreign key (sno) references section(secno),
+    ->      foreign key (rno) references room(roomno));
+Query OK, 0 rows affected, 3 warnings (0.03 sec)
+
+
+mysql> INSERT INTO room VALUES
+    -> (101, 30, 'A'),
+    -> (102, 25, 'B'),
+    -> (103, 20, 'C'),
+    -> (104, 35, 'A');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO course VALUES
+    -> (1, 'Math', 'BSC'),
+    -> (2, 'Science', 'CET'),
+    -> (3, 'DBMS', 'CET'),
+    -> (4, 'Physics', 'BBA');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO section  VALUES
+    -> (1, 101, 50),
+    -> (2, 102, 40),
+    -> (3, 103, 35),
+    -> (4, 104, 45);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO exam  VALUES
+    -> (1, 101, 101, '10:00:00'),
+    -> (2, 102, 102, '11:00:00'),
+    -> (3, 103, 103, '12:00:00'),
+    -> (4, 104, 104, '13:00:00');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+
+mysql> desc room;
++----------+------------+------+-----+---------+-------+
+| Field    | Type       | Null | Key | Default | Extra |
++----------+------------+------+-----+---------+-------+
+| roomno   | int        | NO   | PRI | NULL    |       |
+| capacity | int        | YES  |     | NULL    |       |
+| building | varchar(5) | YES  |     | NULL    |       |
++----------+------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from room;
++--------+----------+----------+
+| roomno | capacity | building |
++--------+----------+----------+
+|    101 |       30 | A        |
+|    102 |       25 | B        |
+|    103 |       20 | C        |
+|    104 |       35 | A        |
++--------+----------+----------+
+4 rows in set (0.00 sec)
+
+mysql> desc course;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| courseno   | int         | NO   | PRI | NULL    |       |
+| name       | varchar(10) | YES  |     | NULL    |       |
+| department | varchar(10) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from course;
++----------+---------+------------+
+| courseno | name    | department |
++----------+---------+------------+
+|        1 | Math    | BSC        |
+|        2 | Science | CET        |
+|        3 | DBMS    | CET        |
+|        4 | Physics | BBA        |
++----------+---------+------------+
+4 rows in set (0.00 sec)
+
+mysql> desc section;
++------------+------+------+-----+---------+-------+
+| Field      | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| cno        | int  | YES  |     | NULL    |       |
+| secno      | int  | NO   | PRI | NULL    |       |
+| enrollment | int  | YES  |     | NULL    |       |
++------------+------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from section;
++------+-------+------------+
+| cno  | secno | enrollment |
++------+-------+------------+
+|    1 |   101 |         50 |
+|    2 |   102 |         40 |
+|    3 |   103 |         35 |
+|    4 |   104 |         45 |
++------+-------+------------+
+4 rows in set (0.00 sec)
+
+mysql> desc exam;
++--------+------+------+-----+---------+-------+
+| Field  | Type | Null | Key | Default | Extra |
++--------+------+------+-----+---------+-------+
+| cnum   | int  | YES  | MUL | NULL    |       |
+| sno    | int  | YES  | MUL | NULL    |       |
+| rno    | int  | YES  | MUL | NULL    |       |
+| timing | time | YES  |     | NULL    |       |
++--------+------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> select * from exam;
++------+------+------+----------+
+| cnum | sno  | rno  | timing   |
++------+------+------+----------+
+|    1 |  101 |  101 | 10:00:00 |
+|    2 |  102 |  102 | 11:00:00 |
+|    3 |  103 |  103 | 12:00:00 |
+|    4 |  104 |  104 | 13:00:00 |
++------+------+------+----------+
+4 rows in set (0.00 sec)
+
+
+
+
+SOLVE THE FOLLOWING QUERIES
+1) List the course and no. of sections in each Course.
+
+
+mysql> select course.name, COUNT(section.secno) as Number_of_sections
+    -> from course
+    -> left join section ON course.courseno = section.cno
+    -> group by course.name;
++---------+--------------------+
+| name    | Number_of_sections |
++---------+--------------------+
+| Math    |                  1 |
+| Science |                  1 |
+| DBMS    |                  1 |
+| Physics |                  1 |
++---------+--------------------+
+4 rows in set (0.00 sec)
+
+
+2)List the course and no. of sections in each Course in CET department.
+
+mysql> select course.name, COUNT(section.secno) as Number_of_sections,department
+    -> from course
+    -> left join section ON course.courseno = section.cno
+    -> where course.department='CET'
+    -> group by course.name;
++---------+--------------------+------------+
+| name    | Number_of_sections | department |
++---------+--------------------+------------+
+| Science |                  1 | CET        |
+| DBMS    |                  1 | CET        |
++---------+--------------------+------------+
+2 rows in set (0.03 sec)
+
+
+3) Display the course number and no of sections in each course in CET department where no of sections are more than 5
+
+
+mysql> select course.courseno, count(section.secno) as Number_of_sections
+    -> from course
+    -> join section on course.courseno = section.cno
+    -> where course.department='CET'
+    -> group by course.courseno
+    -> having count(section.secno) > 5;
+Empty set (0.00 sec)
+
+
+4)Display c-number, name ,department of such courses whose exam is conducted in ‘A’ building.
+
+
+mysql> SELECT course.courseno, course.name, course.department
+    -> FROM course
+    ->  join exam on course.courseno = exam.cnum
+    ->  join room on exam.rno = room.roomno
+    -> WHERE room.building = 'A';
++----------+---------+------------+
+| courseno | name    | department |
++----------+---------+------------+
+|        1 | Math    | BSC        |
+|        4 | Physics | BBA        |
++----------+---------+------------+
+2 rows in set (0.01 sec)
+
+
+5)Get exam details of course ‘DBMS’
+
+mysql> SELECT *
+    -> from exam
+    -> join course on course.courseno=exam.cnum
+    -> where course.name='DBMS';
++------+------+------+----------+----------+------+------------+
+| cnum | sno  | rno  | timing   | courseno | name | department |
++------+------+------+----------+----------+------+------------+
+|    3 |  103 |  103 | 12:00:00 |        3 | DBMS | CET        |
++------+------+------+----------+----------+------+------------+
+1 row in set (0.02 sec)
+
+6)Display the exam room number, its capacity and building for course ‘DBMS’
+
+mysql> select room.roomno, room.capacity, room.building
+    -> from exam
+    -> join room on exam.rno = room.roomno
+    -> join section on exam.sno = section.secno
+    -> join course on exam.cnum = course.courseno
+    -> where course.name = 'DBMS';
++--------+----------+----------+
+| roomno | capacity | building |
++--------+----------+----------+
+|    103 |       20 | C        |
++--------+----------+----------+
+1 row in set (0.00 sec)
+
+
+7)Display all the courses whose total enrollment is greater than total enrollment of course ’DBMS’.
+
+Here we will be using sum() as one course can have multiple sections
+In the parent query we calculate the sum of enrollments of a particular query
+In the child query we compare the sum with sum of enrollents of all sections of the course DBMS
+
+
+mysql> select course.courseno, course.name, course.department
+    -> from course
+    -> join section on course.courseno = section.cno
+    -> group by course.courseno, course.name, course.department
+    -> having sum(section.enrollment) > (
+    ->   select sum(section.enrollment)
+    ->   from section
+    ->   join course on section.cno = course.courseno
+    ->   where course.name = 'DBMS'
+    -> );
++----------+---------+------------+
+| courseno | name    | department |
++----------+---------+------------+
+|        1 | Math    | BSC        |
+|        2 | Science | CET        |
+|        4 | Physics | BBA        |
++----------+---------+------------+
+3 rows in set (0.01 sec)
+
+
+8)Display all the courses whose total enrollment is greater than total enrollment of every course in CET department.
+
+Similar to previous question
+Only difference will be the comparison between departments instead of course
+
+mysql> select course.name
+    -> from course
+    -> join exam on course.courseno = exam.cnum
+    -> join section on exam.sno = section.secno
+    -> where course.department != 'CET'
+    -> group by course.courseno,course.name
+    -> having sum(section.enrollment) > ALL (
+    ->     SELECT SUM(section.enrollment)
+    ->     FROM course
+    ->     join exam ON course.courseno = exam.cnum
+    ->     join section on exam.sno = section.secno
+    ->     WHERE course.department = 'CET'
+    -> group by course.courseno
+    -> );
++---------+
+| name    |
++---------+
+| Math    |
+| Physics |
++---------+
+2 rows in set (0.00 sec)
+
+
+9)Display course no, name, department , section and enrollment of each course.
+using left outer join as some courses might have some null data about that course
+
+mysql> select course.courseno, course.name, course.department, section.secno, section.enrollment
+    -> from course
+    -> left outer join section
+    -> on course.courseno = section.cno;
++----------+---------+------------+-------+------------+
+| courseno | name    | department | secno | enrollment |
++----------+---------+------------+-------+------------+
+|        1 | Math    | BSC        |   101 |         50 |
+|        2 | Science | CET        |   102 |         40 |
+|        3 | DBMS    | CET        |   103 |         35 |
+|        4 | Physics | BBA        |   104 |         45 |
++----------+---------+------------+-------+------------+
+4 rows in set (0.00 sec)
+
+
+
+10)Create one view
+
+
+mysql> create view exams_and_course as
+    -> select exam.cnum, exam.sno, exam.rno, exam.timing
+    -> from exam
+    -> join course ON exam.cnum = course.courseno;
+Query OK, 0 rows affected (0.01 sec)
+
+
+mysql> select * from exams_and_course;
++------+------+------+----------+
+| cnum | sno  | rno  | timing   |
++------+------+------+----------+
+|    1 |  101 |  101 | 10:00:00 |
+|    2 |  102 |  102 | 11:00:00 |
+|    3 |  103 |  103 | 12:00:00 |
+|    4 |  104 |  104 | 13:00:00 |
++------+------+------+----------+
+4 rows in set (0.00 sec)
+
